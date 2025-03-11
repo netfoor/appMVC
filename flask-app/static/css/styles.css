@@ -1,0 +1,16 @@
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.success-animation {
+    animation: bounce 0.5s ease-in-out 2;
+}
+
+.code-feedback {
+    transition: all 0.3s ease;
+}
+
+.drag-highlight {
+    box-shadow: 0 0 15px rgba(66, 153, 225, 0.5);
+}

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es" x-data="{ 
+    currentLesson: 1, 
+    draggedItems: [], 
+    codeInput: '', 
+    quizAnswers: {},
+    activeTab: 'basics',
+    showDefinition: false,
+    showAnalogy: false,
+    showAttributes: false,
+    showMethods: false,
+    showObjectExample: false,
+    lesson: {
+        title: 'Introducción a Clases y Objetos',
+        description: 'Aprenderás los fundamentos de la Programación Orientada a Objetos.',
+        interactive_elements: [
+            {
+                type: 'drag-drop',
+                data: {
+                    options: ['nombre', 'raza', 'edad', 'ladrar()', 'correr()']
+                }
+            },
+            {
+                type: 'code-editor'
+            }
+        ]
+    }
+}">
+<head>
+    <meta charset="UTF-8">
+    <title>Aprende POO - Clases y Objetos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/python/python.min.js"></script>
+    <style>
+        .concept-card {
+            transition: all 0.3s ease;
+        }
+        .concept-card:hover {
+            transform: translateY(-5px);
+        }
+        .tab-active {
+            border-bottom: 3px solid #3B82F6;
+            color: #1E40AF;
+        }
+        .theory-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .theory-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Sección Teoría Interactiva -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-blue-600 mb-4" x-text="`Lección ${currentLesson}: ${lesson.title}`"></h1>
+            <p class="text-gray-700 mb-6" x-text="lesson.description"></p>
+            
+            <!-- Navegación por pestañas -->
+            <div class="border-b border-gray-200 mb-6">
+                <ul class="flex flex-wrap -mb-px">
+                    <li class="mr-2">
+                        <button @click="activeTab = 'basics'" 
+                                class="inline-block py-2 px-4 font-medium" 
+                                :class="activeTab === 'basics' ? 'tab-active' : 'text-gray-500 hover:text-blue-500'">
+                            Conceptos Básicos
+                        </button>
+                    </li>
+                    <li class="mr-2">
+                        <button @click="activeTab = 'structure'" 
+                                class="inline-block py-2 px-4 font-medium" 
+                                :class="activeTab === 'structure' ? 'tab-active' : 'text-gray-500 hover:text-blue-500'">
+                            Estructura de Clases
+                        </button>
+                    </li>
+                    <li class="mr-2">
+                        <button @click="activeTab = 'interactive'" 
+                                class="inline-block py-2 px-4 font-medium" 
+                                :class="activeTab === 'interactive' ? 'tab-active' : 'text-gray-500 hover:text-blue-500'">
+                            Ejercicios Prácticos
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contenido de Pestañas -->
+            
+            <!-- Pestaña 1: Conceptos Básicos -->
+            <div x-show="activeTab === 'basics'" class="space-y-6">
+                <!-- Definición de POO -->
+                <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-500">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-3">¿Qué es la Programación Orientada a Objetos?</h2>
+                    <p class="mb-3">La Programación Orientada a Objetos (POO) es un paradigma de programación basado en el concepto de "objetos", que pueden contener datos y código: datos en forma de campos (atributos), y código en forma de procedimientos (métodos).</p>
+                    <button @click="showDefinition = !showDefinition" 
+                            class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                        <span x-text="showDefinition ? 'Leer menos' : 'Leer más'"></span>
+                        <svg :class="showDefinition ? 'rotate-180' : ''" class="w-4 h-4 ml-1 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div x-show="showDefinition" class="mt-3 pt-3 border-t border-blue-200">
+                        <p class="mb-3">La POO ofrece varias ventajas:</p>
+                        <ul class="list-disc pl-5 space-y-1 mb-3">
+                            <li>Modularidad: El código fuente de un objeto puede ser escrito y mantenido independientemente.</li>
+                            <li>Reutilización: Los objetos pueden ser reutilizados en diferentes programas.</li>
+                            <li>Encapsulamiento: Oculta los detalles de implementación y expone solo lo necesario.</li>
+                            <li>Abstracción: Permite enfocarse en lo que hace un objeto en lugar de cómo lo hace.</li>
+                            <li>Herencia: Permite crear nuevas clases basadas en clases existentes.</li>
+                            <li>Polimorfismo: Permite que diferentes objetos respondan de manera específica al mismo mensaje.</li>
+                        </ul>
+                        <p>La POO es fundamental en lenguajes como Python, Java, C++, C#, y muchos otros lenguajes modernos.</p>
+                    </div>
+                </div>
+
+                <!-- Analogía para entender clases y objetos -->
+                <div class="bg-green-50 p-5 rounded-lg border-l-4 border-green-500">
+                    <h2 class="text-2xl font-bold text-green-800 mb-3">Clases y Objetos: Una Analogía</h2>
+                    <p class="mb-3">Para entender la relación entre clases y objetos, piensa en un plano arquitectónico y las casas construidas a partir de ese plano.</p>
+                    <button @click="showAnalogy = !showAnalogy" 
+                            class="text-green-600 hover:text-green-800 font-medium flex items-center">
+                        <span x-text="showAnalogy ? 'Ocultar analogía' : 'Ver analogía'"></span>
+                        <svg :class="showAnalogy ? 'rotate-180' : ''" class="w-4 h-4 ml-1 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div x-show="showAnalogy" class="mt-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <h3 class="font-bold text-lg text-green-700 mb-2">Clase = Plano</h3>
+                                <p>Una clase es como un plano arquitectónico que define cómo se construirá una casa: número de habitaciones, tamaño, instalaciones, etc.</p>
+                                <p class="mt-2">Es una plantilla que define las características y comportamientos que tendrán los objetos creados a partir de ella.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <h3 class="font-bold text-lg text-green-700 mb-2">Objeto = Casa</h3>
+                                <p>Un objeto es como una casa construida siguiendo ese plano. Cada casa tiene las mismas características básicas definidas en el plano.</p>
+                                <p class="mt-2">Sin embargo, cada casa puede tener su propio color de pintura, muebles diferentes, o modificaciones específicas.</p>
+                            </div>
+                        </div>
+                        <p>Puedes crear muchos objetos (casas) a partir de una sola clase (plano), cada uno con sus propios valores para los atributos definidos por la clase.</p>
+                        <div class="bg-yellow-50 p-3 mt-3 rounded-md">
+                            <p class="font-medium text-yellow-800">🔍 Interactivo: Haz clic en los elementos para ver ejemplos</p>
+                            <div class="grid grid-cols-2 gap-3 mt-2">
+                                <button @click="showAttributes = !showAttributes" class="bg-white p-3 rounded border border-yellow-300 hover:bg-yellow-100 text-left">
+                                    <span class="font-medium">Atributos</span>: Número de habitaciones, metros cuadrados, tipo de techo...
+                                </button>
+                                <button @click="showMethods = !showMethods" class="bg-white p-3 rounded border border-yellow-300 hover:bg-yellow-100 text-left">
+                                    <span class="font-medium">Métodos</span>: Abrir puerta, encender luces, activar calefacción...
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explicación detallada -->
+                <div x-show="showAttributes" class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500 shadow-md">
+                    <h3 class="text-xl font-semibold text-yellow-800">Atributos en POO</h3>
+                    <p class="my-2">Los atributos son las características o propiedades que tienen los objetos. Son variables asociadas a la clase y sus objetos.</p>
+                    <div class="bg-white p-3 rounded">
+                        <pre class="text-sm overflow-x-auto">
+class Perro:
+    # Atributos
+    nombre = ""
+    raza = ""
+    edad = 0
+    peso = 0.0</pre>
+                    </div>
+                    <p class="mt-3">Cada perro creado a partir de esta clase puede tener valores diferentes para estos atributos.</p>
+                </div>
+
+                <div x-show="showMethods" class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500 shadow-md">
+                    <h3 class="text-xl font-semibold text-yellow-800">Métodos en POO</h3>
+                    <p class="my-2">Los métodos son las acciones o comportamientos que pueden realizar los objetos. Son funciones definidas dentro de una clase.</p>
+                    <div class="bg-white p-3 rounded">
+                        <pre class="text-sm overflow-x-auto">
+class Perro:
+    # Atributos
+    nombre = ""
+    
+    # Métodos
+    def ladrar(self):
+        print("¡Guau guau!")
+        
+    def correr(self):
+        print(f"{self.nombre} está corriendo.")</pre>
+                    </div>
+                    <p class="mt-3">Los métodos pueden acceder y modificar los atributos del objeto a través de la referencia <code>self</code>.</p>
+                </div>
+                
+                <!-- Conceptos fundamentales en tarjetas -->
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Conceptos Fundamentales</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-purple-500">
+                        <h3 class="text-xl font-bold text-purple-700 mb-2">Clase</h3>
+                        <p>Plantilla o modelo que define las propiedades (atributos) y comportamientos (métodos) que tendrán los objetos creados a partir de ella.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-blue-500">
+                        <h3 class="text-xl font-bold text-blue-700 mb-2">Objeto</h3>
+                        <p>Instancia específica de una clase. Contiene valores concretos para los atributos definidos en su clase y puede realizar las acciones definidas en sus métodos.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-green-500">
+                        <h3 class="text-xl font-bold text-green-700 mb-2">Instanciación</h3>
+                        <p>Proceso de crear un objeto a partir de una clase. En Python, se realiza llamando a la clase como si fuera una función: <code>mi_perro = Perro()</code>.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-red-500">
+                        <h3 class="text-xl font-bold text-red-700 mb-2">Constructor</h3>
+                        <p>Método especial que se ejecuta automáticamente cuando se crea un objeto. En Python, se define como <code>__init__(self)</code> dentro de la clase.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-yellow-500">
+                        <h3 class="text-xl font-bold text-yellow-700 mb-2">Encapsulamiento</h3>
+                        <p>Principio que consiste en ocultar los detalles internos de un objeto y exponer solo lo necesario para su uso. Protege la integridad de los datos.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-indigo-500">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">Herencia</h3>
+                        <p>Mecanismo que permite crear nuevas clases basadas en clases existentes, heredando sus atributos y métodos, y pudiendo añadir nuevos o modificar los heredados.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña 2: Estructura de Clases -->
+            <div x-show="activeTab === 'structure'" class="space-y-6">
+                <!-- Estructura básica de una clase -->
+                <div class="bg-indigo-50 p-5 rounded-lg border-l-4 border-indigo-500">
+                    <h2 class="text-2xl font-bold text-indigo-800 mb-3">Estructura de una Clase en Python</h2>
+                    <p class="mb-4">Una clase en Python tiene la siguiente estructura básica:</p>
+                    <div class="bg-white p-4 rounded-md shadow-sm overflow-x-auto">
+                        <pre class="text-sm">
+class NombreDeLaClase:
+    # Atributos de clase (compartidos por todas las instancias)
+    atributo_clase = valor
+    
+    # Constructor (inicializador)
+    def __init__(self, parametro1, parametro2):
+        # Atributos de instancia (específicos de cada objeto)
+        self.atributo1 = parametro1
+        self.atributo2 = parametro2
+    
+    # Métodos de instancia
+    def metodo1(self):
+        # Código del método
+        return resultado
+    
+    def metodo2(self, parametro):
+        # Código del método
+        self.atributo1 = nuevo_valor</pre>
+                    </div>
+                </div>
+
+                <!-- Ejemplos de clases con explicaciones interactivas -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-3">Ejemplo: Clase Perro</h2>
+                    
+                    <div class="tabs flex border-b mb-4">
+                        <button @click="showObjectExample = false" class="py-2 px-4 mr-2" :class="!showObjectExample ? 'font-medium text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'">Definición de Clase</button>
+                        <button @click="showObjectExample = true" class="py-2 px-4" :class="showObjectExample ? 'font-medium text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'">Instancias (Objetos)</button>
+                    </div>
+                    
+                    <!-- Definición de la clase -->
+                    <div x-show="!showObjectExample">
+                        <div class="bg-gray-50 p-4 rounded-md mb-4 overflow-x-auto">
+                            <pre class="text-sm">
+class Perro:
+    # Atributo de clase
+    especie = "Canis familiaris"
+    
+    # Constructor
+    def __init__(self, nombre, raza, edad=0):
+        # Atributos de instancia
+        self.nombre = nombre
+        self.raza = raza
+        self.edad = edad
+    
+    # Métodos
+    def ladrar(self):
+        return f"¡Guau! Mi nombre es {self.nombre}"
+    
+    def cumplir_anios(self):
+        self.edad += 1
+        return f"{self.nombre} ahora tiene {self.edad} años"</pre>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-blue-50 p-3 rounded-md">
+                                <h3 class="font-bold text-blue-800 mb-2">Elementos de la clase</h3>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li><strong>Nombre de la clase:</strong> Perro (por convención en mayúscula)</li>
+                                    <li><strong>Atributo de clase:</strong> especie (compartido por todos los perros)</li>
+                                    <li><strong>Constructor:</strong> __init__ (inicializa cada nuevo perro)</li>
+                                    <li><strong>Atributos de instancia:</strong> nombre, raza, edad (específicos de cada perro)</li>
+                                    <li><strong>Métodos:</strong> ladrar(), cumplir_anios() (acciones que puede realizar un perro)</li>
+                                </ul>
+                            </div>
+                            <div class="bg-green-50 p-3 rounded-md">
+                                <h3 class="font-bold text-green-800 mb-2">Observaciones importantes</h3>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>El parámetro <code>self</code> refiere al objeto propio y es obligatorio en todos los métodos de instancia</li>
+                                    <li>Los atributos de instancia se definen generalmente en el constructor</li>
+                                    <li>Podemos tener parámetros con valores por defecto como <code>edad=0</code></li>
+                                    <li>Los métodos pueden modificar los atributos del objeto</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ejemplos de instancias -->
+                    <div x-show="showObjectExample">
+                        <div class="bg-gray-50 p-4 rounded-md mb-4 overflow-x-auto">
+                            <pre class="text-sm">
+# Crear instancias (objetos) de la clase Perro
+rocky = Perro("Rocky", "Bulldog", 3)
+luna = Perro("Luna", "Labrador")  # edad por defecto = 0
+
+# Acceder a atributos
+print(rocky.nombre)  # Rocky
+print(luna.raza)     # Labrador
+print(rocky.especie) # Canis familiaris (atributo de clase)
+
+# Llamar a métodos
+print(rocky.ladrar())        # ¡Guau! Mi nombre es Rocky
+print(luna.cumplir_anios())  # Luna ahora tiene 1 años</pre>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-md border-l-4 border-yellow-500">
+                            <h3 class="font-bold text-yellow-800 mb-2">Memoria y objetos</h3>
+                            <p class="mb-2">Cada objeto creado (rocky, luna) tiene:</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Su propio espacio en memoria</li>
+                                <li>Sus propios valores para los atributos de instancia</li>
+                                <li>Acceso al mismo valor para los atributos de clase</li>
+                                <li>La capacidad de ejecutar los métodos definidos en la clase</li>
+                            </ul>
+                            <p class="mt-2">Modificar un atributo en un objeto no afecta a otros objetos de la misma clase.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagrama interactivo -->
+                <div class="bg-purple-50 p-5 rounded-lg border-l-4 border-purple-500">
+                    <h2 class="text-2xl font-bold text-purple-800 mb-3">Relación entre Clases y Objetos</h2>
+                    <p class="mb-4">Una clase define la estructura y comportamiento. Los objetos son instancias específicas con valores concretos.</p>
+                    
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-4 my-4">
+                        <div class="bg-white p-4 rounded-lg shadow-md w-full md:w-1/3">
+                            <h3 class="text-center font-bold text-purple-700 mb-2">Clase Perro</h3>
+                            <div class="border-t border-b border-gray-200 py-2 my-2">
+                                <p class="font-medium">Atributos:</p>
+                                <ul class="list-disc pl-5">
+                                    <li>nombre</li>
+                                    <li>raza</li>
+                                    <li>edad</li>
+                                </ul>
+                            </div>
+                            <div class="border-b border-gray-200 py-2 mb-2">
+                                <p class="font-medium">Métodos:</p>
+                                <ul class="list-disc pl-5">
+                                    <li>ladrar()</li>
+                                    <li>cumplir_anios()</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-4 w-full md:w-2/3">
+                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
+                                <h3 class="font-bold text-blue-700">Objeto: rocky</h3>
+                                <div class="mt-2">
+                                    <p><span class="font-medium">nombre:</span> "Rocky"</p>
+                                    <p><span class="font-medium">raza:</span> "Bulldog"</p>
+                                    <p><span class="font-medium">edad:</span> 3</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-green-500">
+                                <h3 class="font-bold text-green-700">Objeto: luna</h3>
+                                <div class="mt-2">
+                                    <p><span class="font-medium">nombre:</span> "Luna"</p>
+                                    <p><span class="font-medium">raza:</span> "Labrador"</p>
+                                    <p><span class="font-medium">edad:</span> 0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña 3: Ejercicios Prácticos -->
+            <div x-show="activeTab === 'interactive'" class="space-y-6">
+                <!-- Ejercicio Drag and Drop -->
+                <div class="mb-8">
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">🏗️ Construye tu Clase</h3>
+                        <p class="mb-4">Arrastra los elementos que deberían formar parte de una clase Perro. Separa los atributos (características) de los métodos (acciones).</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div id="attributes" class="space-y-2">
+                                <template x-for="(option, index) in lesson.interactive_elements.find(e => e.type === 'drag-drop').data.options">
+                                    <div class="bg-green-500 text-white p-3 rounded-lg cursor-move hover:bg-green-600 transition-colors"
+                                         x-text="option"
+                                         draggable="true"
+                                         @dragstart="event.dataTransfer.setData('text/plain', option)"></div>
+                                </template>
+                            </div>
+                            <div id="class-box" 
+                                 class="border-2 border-dashed border-blue-500 p-4 rounded-lg min-h-[200px]"
+                                 @dragover.prevent
+                                 @drop.prevent="draggedItems.push(event.dataTransfer.getData('text/plain'));
+                                               document.getElementById('class-box').classList.remove('border-dashed')">
+                                <p class="text-blue-600 font-medium mb-2">Clase Perro</p>
+                                <div class="space-y-2">
+                                    <template x-for="item in draggedItems">
+                                        <div class="bg-blue-100 text-blue-800 p-2 rounded" x-text="item"></div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                                @click="htmx.ajax('POST', '/check-drag-drop', { values: { items: draggedItems }, target: '#result-drag-drop' })">
+                            Verificar
+                        </button>
+                        <div id="result-drag-drop" class="mt-2"></div>
+                    </div>
+                </div>
+
+                <!-- Editor<!-- filepath: /home/netfoor/NextWork/clases-obj/flask-app/templates/theory/lesson_1.html -->
+<!DOCTYPE html>
+<html lang="es" x-data="{ 
+    currentLesson: 1, 
+    draggedItems: [], 
+    codeInput: '', 
+    quizAnswers: {},
+    activeTab: 'basics',
+    showDefinition: false,
+    showAnalogy: false,
+    showAttributes: false,
+    showMethods: false,
+    showObjectExample: false,
+    lesson: {
+        title: 'Introducción a Clases y Objetos',
+        description: 'Aprenderás los fundamentos de la Programación Orientada a Objetos.',
+        interactive_elements: [
+            {
+                type: 'drag-drop',
+                data: {
+                    options: ['nombre', 'raza', 'edad', 'ladrar()', 'correr()']
+                }
+            },
+            {
+                type: 'code-editor'
+            }
+        ]
+    }
+}">
+<head>
+    <meta charset="UTF-8">
+    <title>Aprende POO - Clases y Objetos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/python/python.min.js"></script>
+    <style>
+        .concept-card {
+            transition: all 0.3s ease;
+        }
+        .concept-card:hover {
+            transform: translateY(-5px);
+        }
+        .tab-active {
+            border-bottom: 3px solid #3B82F6;
+            color: #1E40AF;
+        }
+        .theory-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .theory-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Sección Teoría Interactiva -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-blue-600 mb-4" x-text="`Lección ${currentLesson}: ${lesson.title}`"></h1>
+            <p class="text-gray-700 mb-6" x-text="lesson.description"></p>
+            
+            <!-- Navegación por pestañas -->
+            <div class="border-b border-gray-200 mb-6">
+                <ul class="flex flex-wrap -mb-px">
+                    <li class="mr-2">
+                        <button @click="activeTab = 'basics'" 
+                                class="inline-block py-2 px-4 font-medium" 
+                                :class="activeTab === 'basics' ? 'tab-active' : 'text-gray-500 hover:text-blue-500'">
+                            Conceptos Básicos
+                        </button>
+                    </li>
+                    <li class="mr-2">
+                        <button @click="activeTab = 'structure'" 
+                                class="inline-block py-2 px-4 font-medium" 
+                                :class="activeTab === 'structure' ? 'tab-active' : 'text-gray-500 hover:text-blue-500'">
+                            Estructura de Clases
+                        </button>
+                    </li>
+                    <li class="mr-2">
+                        <button @click="activeTab = 'interactive'" 
+                                class="inline-block py-2 px-4 font-medium" 
+                                :class="activeTab === 'interactive' ? 'tab-active' : 'text-gray-500 hover:text-blue-500'">
+                            Ejercicios Prácticos
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contenido de Pestañas -->
+            
+            <!-- Pestaña 1: Conceptos Básicos -->
+            <div x-show="activeTab === 'basics'" class="space-y-6">
+                <!-- Definición de POO -->
+                <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-500">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-3">¿Qué es la Programación Orientada a Objetos?</h2>
+                    <p class="mb-3">La Programación Orientada a Objetos (POO) es un paradigma de programación basado en el concepto de "objetos", que pueden contener datos y código: datos en forma de campos (atributos), y código en forma de procedimientos (métodos).</p>
+                    <button @click="showDefinition = !showDefinition" 
+                            class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                        <span x-text="showDefinition ? 'Leer menos' : 'Leer más'"></span>
+                        <svg :class="showDefinition ? 'rotate-180' : ''" class="w-4 h-4 ml-1 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div x-show="showDefinition" class="mt-3 pt-3 border-t border-blue-200">
+                        <p class="mb-3">La POO ofrece varias ventajas:</p>
+                        <ul class="list-disc pl-5 space-y-1 mb-3">
+                            <li>Modularidad: El código fuente de un objeto puede ser escrito y mantenido independientemente.</li>
+                            <li>Reutilización: Los objetos pueden ser reutilizados en diferentes programas.</li>
+                            <li>Encapsulamiento: Oculta los detalles de implementación y expone solo lo necesario.</li>
+                            <li>Abstracción: Permite enfocarse en lo que hace un objeto en lugar de cómo lo hace.</li>
+                            <li>Herencia: Permite crear nuevas clases basadas en clases existentes.</li>
+                            <li>Polimorfismo: Permite que diferentes objetos respondan de manera específica al mismo mensaje.</li>
+                        </ul>
+                        <p>La POO es fundamental en lenguajes como Python, Java, C++, C#, y muchos otros lenguajes modernos.</p>
+                    </div>
+                </div>
+
+                <!-- Analogía para entender clases y objetos -->
+                <div class="bg-green-50 p-5 rounded-lg border-l-4 border-green-500">
+                    <h2 class="text-2xl font-bold text-green-800 mb-3">Clases y Objetos: Una Analogía</h2>
+                    <p class="mb-3">Para entender la relación entre clases y objetos, piensa en un plano arquitectónico y las casas construidas a partir de ese plano.</p>
+                    <button @click="showAnalogy = !showAnalogy" 
+                            class="text-green-600 hover:text-green-800 font-medium flex items-center">
+                        <span x-text="showAnalogy ? 'Ocultar analogía' : 'Ver analogía'"></span>
+                        <svg :class="showAnalogy ? 'rotate-180' : ''" class="w-4 h-4 ml-1 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div x-show="showAnalogy" class="mt-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <h3 class="font-bold text-lg text-green-700 mb-2">Clase = Plano</h3>
+                                <p>Una clase es como un plano arquitectónico que define cómo se construirá una casa: número de habitaciones, tamaño, instalaciones, etc.</p>
+                                <p class="mt-2">Es una plantilla que define las características y comportamientos que tendrán los objetos creados a partir de ella.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <h3 class="font-bold text-lg text-green-700 mb-2">Objeto = Casa</h3>
+                                <p>Un objeto es como una casa construida siguiendo ese plano. Cada casa tiene las mismas características básicas definidas en el plano.</p>
+                                <p class="mt-2">Sin embargo, cada casa puede tener su propio color de pintura, muebles diferentes, o modificaciones específicas.</p>
+                            </div>
+                        </div>
+                        <p>Puedes crear muchos objetos (casas) a partir de una sola clase (plano), cada uno con sus propios valores para los atributos definidos por la clase.</p>
+                        <div class="bg-yellow-50 p-3 mt-3 rounded-md">
+                            <p class="font-medium text-yellow-800">🔍 Interactivo: Haz clic en los elementos para ver ejemplos</p>
+                            <div class="grid grid-cols-2 gap-3 mt-2">
+                                <button @click="showAttributes = !showAttributes" class="bg-white p-3 rounded border border-yellow-300 hover:bg-yellow-100 text-left">
+                                    <span class="font-medium">Atributos</span>: Número de habitaciones, metros cuadrados, tipo de techo...
+                                </button>
+                                <button @click="showMethods = !showMethods" class="bg-white p-3 rounded border border-yellow-300 hover:bg-yellow-100 text-left">
+                                    <span class="font-medium">Métodos</span>: Abrir puerta, encender luces, activar calefacción...
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explicación detallada -->
+                <div x-show="showAttributes" class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500 shadow-md">
+                    <h3 class="text-xl font-semibold text-yellow-800">Atributos en POO</h3>
+                    <p class="my-2">Los atributos son las características o propiedades que tienen los objetos. Son variables asociadas a la clase y sus objetos.</p>
+                    <div class="bg-white p-3 rounded">
+                        <pre class="text-sm overflow-x-auto">
+class Perro:
+    # Atributos
+    nombre = ""
+    raza = ""
+    edad = 0
+    peso = 0.0</pre>
+                    </div>
+                    <p class="mt-3">Cada perro creado a partir de esta clase puede tener valores diferentes para estos atributos.</p>
+                </div>
+
+                <div x-show="showMethods" class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500 shadow-md">
+                    <h3 class="text-xl font-semibold text-yellow-800">Métodos en POO</h3>
+                    <p class="my-2">Los métodos son las acciones o comportamientos que pueden realizar los objetos. Son funciones definidas dentro de una clase.</p>
+                    <div class="bg-white p-3 rounded">
+                        <pre class="text-sm overflow-x-auto">
+class Perro:
+    # Atributos
+    nombre = ""
+    
+    # Métodos
+    def ladrar(self):
+        print("¡Guau guau!")
+        
+    def correr(self):
+        print(f"{self.nombre} está corriendo.")</pre>
+                    </div>
+                    <p class="mt-3">Los métodos pueden acceder y modificar los atributos del objeto a través de la referencia <code>self</code>.</p>
+                </div>
+                
+                <!-- Conceptos fundamentales en tarjetas -->
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Conceptos Fundamentales</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-purple-500">
+                        <h3 class="text-xl font-bold text-purple-700 mb-2">Clase</h3>
+                        <p>Plantilla o modelo que define las propiedades (atributos) y comportamientos (métodos) que tendrán los objetos creados a partir de ella.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-blue-500">
+                        <h3 class="text-xl font-bold text-blue-700 mb-2">Objeto</h3>
+                        <p>Instancia específica de una clase. Contiene valores concretos para los atributos definidos en su clase y puede realizar las acciones definidas en sus métodos.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-green-500">
+                        <h3 class="text-xl font-bold text-green-700 mb-2">Instanciación</h3>
+                        <p>Proceso de crear un objeto a partir de una clase. En Python, se realiza llamando a la clase como si fuera una función: <code>mi_perro = Perro()</code>.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-red-500">
+                        <h3 class="text-xl font-bold text-red-700 mb-2">Constructor</h3>
+                        <p>Método especial que se ejecuta automáticamente cuando se crea un objeto. En Python, se define como <code>__init__(self)</code> dentro de la clase.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-yellow-500">
+                        <h3 class="text-xl font-bold text-yellow-700 mb-2">Encapsulamiento</h3>
+                        <p>Principio que consiste en ocultar los detalles internos de un objeto y exponer solo lo necesario para su uso. Protege la integridad de los datos.</p>
+                    </div>
+                    <div class="concept-card bg-white p-5 rounded-lg shadow-md border-t-4 border-indigo-500">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">Herencia</h3>
+                        <p>Mecanismo que permite crear nuevas clases basadas en clases existentes, heredando sus atributos y métodos, y pudiendo añadir nuevos o modificar los heredados.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña 2: Estructura de Clases -->
+            <div x-show="activeTab === 'structure'" class="space-y-6">
+                <!-- Estructura básica de una clase -->
+                <div class="bg-indigo-50 p-5 rounded-lg border-l-4 border-indigo-500">
+                    <h2 class="text-2xl font-bold text-indigo-800 mb-3">Estructura de una Clase en Python</h2>
+                    <p class="mb-4">Una clase en Python tiene la siguiente estructura básica:</p>
+                    <div class="bg-white p-4 rounded-md shadow-sm overflow-x-auto">
+                        <pre class="text-sm">
+class NombreDeLaClase:
+    # Atributos de clase (compartidos por todas las instancias)
+    atributo_clase = valor
+    
+    # Constructor (inicializador)
+    def __init__(self, parametro1, parametro2):
+        # Atributos de instancia (específicos de cada objeto)
+        self.atributo1 = parametro1
+        self.atributo2 = parametro2
+    
+    # Métodos de instancia
+    def metodo1(self):
+        # Código del método
+        return resultado
+    
+    def metodo2(self, parametro):
+        # Código del método
+        self.atributo1 = nuevo_valor</pre>
+                    </div>
+                </div>
+
+                <!-- Ejemplos de clases con explicaciones interactivas -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-3">Ejemplo: Clase Perro</h2>
+                    
+                    <div class="tabs flex border-b mb-4">
+                        <button @click="showObjectExample = false" class="py-2 px-4 mr-2" :class="!showObjectExample ? 'font-medium text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'">Definición de Clase</button>
+                        <button @click="showObjectExample = true" class="py-2 px-4" :class="showObjectExample ? 'font-medium text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'">Instancias (Objetos)</button>
+                    </div>
+                    
+                    <!-- Definición de la clase -->
+                    <div x-show="!showObjectExample">
+                        <div class="bg-gray-50 p-4 rounded-md mb-4 overflow-x-auto">
+                            <pre class="text-sm">
+class Perro:
+    # Atributo de clase
+    especie = "Canis familiaris"
+    
+    # Constructor
+    def __init__(self, nombre, raza, edad=0):
+        # Atributos de instancia
+        self.nombre = nombre
+        self.raza = raza
+        self.edad = edad
+    
+    # Métodos
+    def ladrar(self):
+        return f"¡Guau! Mi nombre es {self.nombre}"
+    
+    def cumplir_anios(self):
+        self.edad += 1
+        return f"{self.nombre} ahora tiene {self.edad} años"</pre>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-blue-50 p-3 rounded-md">
+                                <h3 class="font-bold text-blue-800 mb-2">Elementos de la clase</h3>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li><strong>Nombre de la clase:</strong> Perro (por convención en mayúscula)</li>
+                                    <li><strong>Atributo de clase:</strong> especie (compartido por todos los perros)</li>
+                                    <li><strong>Constructor:</strong> __init__ (inicializa cada nuevo perro)</li>
+                                    <li><strong>Atributos de instancia:</strong> nombre, raza, edad (específicos de cada perro)</li>
+                                    <li><strong>Métodos:</strong> ladrar(), cumplir_anios() (acciones que puede realizar un perro)</li>
+                                </ul>
+                            </div>
+                            <div class="bg-green-50 p-3 rounded-md">
+                                <h3 class="font-bold text-green-800 mb-2">Observaciones importantes</h3>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>El parámetro <code>self</code> refiere al objeto propio y es obligatorio en todos los métodos de instancia</li>
+                                    <li>Los atributos de instancia se definen generalmente en el constructor</li>
+                                    <li>Podemos tener parámetros con valores por defecto como <code>edad=0</code></li>
+                                    <li>Los métodos pueden modificar los atributos del objeto</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ejemplos de instancias -->
+                    <div x-show="showObjectExample">
+                        <div class="bg-gray-50 p-4 rounded-md mb-4 overflow-x-auto">
+                            <pre class="text-sm">
+# Crear instancias (objetos) de la clase Perro
+rocky = Perro("Rocky", "Bulldog", 3)
+luna = Perro("Luna", "Labrador")  # edad por defecto = 0
+
+# Acceder a atributos
+print(rocky.nombre)  # Rocky
+print(luna.raza)     # Labrador
+print(rocky.especie) # Canis familiaris (atributo de clase)
+
+# Llamar a métodos
+print(rocky.ladrar())        # ¡Guau! Mi nombre es Rocky
+print(luna.cumplir_anios())  # Luna ahora tiene 1 años</pre>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-md border-l-4 border-yellow-500">
+                            <h3 class="font-bold text-yellow-800 mb-2">Memoria y objetos</h3>
+                            <p class="mb-2">Cada objeto creado (rocky, luna) tiene:</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Su propio espacio en memoria</li>
+                                <li>Sus propios valores para los atributos de instancia</li>
+                                <li>Acceso al mismo valor para los atributos de clase</li>
+                                <li>La capacidad de ejecutar los métodos definidos en la clase</li>
+                            </ul>
+                            <p class="mt-2">Modificar un atributo en un objeto no afecta a otros objetos de la misma clase.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagrama interactivo -->
+                <div class="bg-purple-50 p-5 rounded-lg border-l-4 border-purple-500">
+                    <h2 class="text-2xl font-bold text-purple-800 mb-3">Relación entre Clases y Objetos</h2>
+                    <p class="mb-4">Una clase define la estructura y comportamiento. Los objetos son instancias específicas con valores concretos.</p>
+                    
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-4 my-4">
+                        <div class="bg-white p-4 rounded-lg shadow-md w-full md:w-1/3">
+                            <h3 class="text-center font-bold text-purple-700 mb-2">Clase Perro</h3>
+                            <div class="border-t border-b border-gray-200 py-2 my-2">
+                                <p class="font-medium">Atributos:</p>
+                                <ul class="list-disc pl-5">
+                                    <li>nombre</li>
+                                    <li>raza</li>
+                                    <li>edad</li>
+                                </ul>
+                            </div>
+                            <div class="border-b border-gray-200 py-2 mb-2">
+                                <p class="font-medium">Métodos:</p>
+                                <ul class="list-disc pl-5">
+                                    <li>ladrar()</li>
+                                    <li>cumplir_anios()</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-4 w-full md:w-2/3">
+                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
+                                <h3 class="font-bold text-blue-700">Objeto: rocky</h3>
+                                <div class="mt-2">
+                                    <p><span class="font-medium">nombre:</span> "Rocky"</p>
+                                    <p><span class="font-medium">raza:</span> "Bulldog"</p>
+                                    <p><span class="font-medium">edad:</span> 3</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-green-500">
+                                <h3 class="font-bold text-green-700">Objeto: luna</h3>
+                                <div class="mt-2">
+                                    <p><span class="font-medium">nombre:</span> "Luna"</p>
+                                    <p><span class="font-medium">raza:</span> "Labrador"</p>
+                                    <p><span class="font-medium">edad:</span> 0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña 3: Ejercicios Prácticos -->
+            <div x-show="activeTab === 'interactive'" class="space-y-6">
+                <!-- Ejercicio Drag and Drop -->
+                <div class="mb-8">
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">🏗️ Construye tu Clase</h3>
+                        <p class="mb-4">Arrastra los elementos que deberían formar parte de una clase Perro. Separa los atributos (características) de los métodos (acciones).</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div id="attributes" class="space-y-2">
+                                <template x-for="(option, index) in lesson.interactive_elements.find(e => e.type === 'drag-drop').data.options">
+                                    <div class="bg-green-500 text-white p-3 rounded-lg cursor-move hover:bg-green-600 transition-colors"
+                                         x-text="option"
+                                         draggable="true"
+                                         @dragstart="event.dataTransfer.setData('text/plain', option)"></div>
+                                </template>
+                            </div>
+                            <div id="class-box" 
+                                 class="border-2 border-dashed border-blue-500 p-4 rounded-lg min-h-[200px]"
+                                 @dragover.prevent
+                                 @drop.prevent="draggedItems.push(event.dataTransfer.getData('text/plain'));
+                                               document.getElementById('class-box').classList.remove('border-dashed')">
+                                <p class="text-blue-600 font-medium mb-2">Clase Perro</p>
+                                <div class="space-y-2">
+                                    <template x-for="item in draggedItems">
+                                        <div class="bg-blue-100 text-blue-800 p-2 rounded" x-text="item"></div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                                @click="htmx.ajax('POST', '/check-drag-drop', { values: { items: draggedItems }, target: '#result-drag-drop' })">
+                            Verificar
+                        </button>
+                        <div id="result-drag-drop" class="mt-2"></div>
+                    </div>
+                </div>
+
+                <!-- Editor
