@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>¿Qué es una Clase? - POO para Todos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .theme-bg { background-color: {{ analogia.color_primario }}20; }
+        .theme-text { color: {{ analogia.color_primario }}; }
+        .theme-border { border-color: {{ analogia.color_primario }}; }
+    </style>
+</head>
+<body class="theme-bg min-h-screen">
+    <div class="container mx-auto px-4 py-12">
+        <!-- Header Temático -->
+        <div class="text-center mb-8">
+            <span class="text-6xl">{{ analogia.icono }}</span>
+            <h1 class="text-4xl font-bold theme-text mt-4">¿Qué es una Clase?</h1>
+        </div>
+
+        <!-- Explicación Dinámica -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mx-auto max-w-3xl">
+            <div class="mb-6">
+                <p class="text-lg text-gray-700">
+                    <strong>Una clase es como {{ analogia.nombre.lower() }}.</strong><br>
+                    {{ analogia.descripcion }}
+                </p>
+            </div>
+
+            <!-- Imagen Temática -->
+            <img src="{{ url_for('static', filename='images/' + analogia.imagen_url.split('/')[-1]) }}" 
+                 alt="{{ analogia.nombre }}" 
+                 class="w-full h-64 object-cover rounded-lg mb-6">
+
+            <!-- Atributos y Métodos -->
+            <div class="grid grid-cols-2 gap-6 mb-8">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-xl font-semibold theme-text mb-3">📋 Atributos</h3>
+                    <ul class="list-disc pl-5">
+                        {% for atributo in analogia.atributos %}
+                            <li class="text-gray-700">{{ atributo }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-xl font-semibold theme-text mb-3">⚙️ Métodos</h3>
+                    <ul class="list-disc pl-5">
+                        {% for metodo in analogia.metodos %}
+                            <li class="text-gray-700">{{ metodo }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Ejemplo de Código -->
+            <div class="p-4 bg-gray-800 rounded-lg">
+                <pre class="text-white overflow-x-auto"><code>{{ analogia.ejemplo_codigo }}</code></pre>
+            </div>
+        </div>
+
+        <!-- Botón para Nueva Analogía -->
+        <div class="text-center mt-8">
+            <a href="/clase" 
+               class="inline-block px-8 py-3 text-white rounded-lg theme-bg hover:opacity-90 transition-opacity" 
+               style="background-color: {{ analogia.color_primario }}">
+                Ver Otra Explicación
+            </a>
+        </div>
+    </div>
+</body>
+</html>

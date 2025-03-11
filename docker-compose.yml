@@ -9,6 +9,7 @@ services:
       - DATABASE_URL=postgresql://user:password@db:5432/edu_db
     volumes:
       - ./flask-app:/app
+      - ./flask-app/static:/app/static
     depends_on:
       db:
         condition: service_healthy
