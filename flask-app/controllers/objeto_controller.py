@@ -1,21 +1,28 @@
-from models.objeto_model import ObjectLessonManager, ObjectLesson
-from services.interactivity_service import InteractivityService
+from flask import render_template
+from models.objeto_model import ObjetoModel
 
 class ObjetoController:
     def __init__(self):
-        self.lesson_manager = ObjectLessonManager()
-        self.interactivity_service = InteractivityService()
-    
-    def get_lesson_data(self, lesson_id: int) -> ObjectLesson:
-        return self.lesson_manager.get_lesson(lesson_id)
-    
-    def check_drag_drop_answer(self, lesson_id: int, user_answer: list) -> bool:
-        lesson = self.get_lesson_data(lesson_id)
-        for element in lesson.interactive_elements:
-            if element.type == "drag-drop":
-                return ",".join(user_answer) == element.correct_answer
-        return False
-    
-    def validate_code_exercise(self, lesson_id: int, user_code: str) -> dict:
-        lesson = self.get_lesson_data(lesson_id)
-        return self.interactivity_service.validate_python_code(user_code, lesson.interactive_elements[1].data["expected_output"])
+        self.model = ObjetoModel()
+
+    def explicar_objeto(self):
+        """Obtiene una analogía aleatoria y la prepara para la vista."""
+        analogia = self._formatear_analogia(self.model.get_random_objeto())
+        return render_template('object.html', analogia=analogia)
+
+    def _formatear_analogia(self, analogia_tuple):
+        """Convierte la tupla de la base de datos en un diccionario para la vista."""
+        if not analogia_tuple:
+            return {}
+
+        return {
+            'id': analogia_tuple[0],
+            'nombre': analogia_tuple[1],
+            'descripcion': analogia_tuple[2],
+            'atributos': analogia_tuple[3],
+            'metodos': analogia_tuple[4],
+            'ejemplo_codigo': analogia_tuple[5],
+            'imagen_url': analogia_tuple[6],
+            'icono': analogia_tuple[7],
+            'color_primario': analogia_tuple[8]
+        }

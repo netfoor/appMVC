@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>¿Qué es un Objeto? - POO para Todos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css">
+    <style>
+        .theme-bg { background-color: {{ analogia.color_primario }}20; }
+        .theme-text { color: {{ analogia.color_primario }}; }
+        .theme-border { border-color: {{ analogia.color_primario }}; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="theme-bg min-h-screen">
+    <!-- Barra de navegación -->
+    <nav class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="/" class="font-bold text-xl theme-text">POO para Todos</a>
+            <div class="flex space-x-4">
+                <a href="/#conceptos" class="hover:theme-text">Conceptos</a>
+                <a href="/#ejemplos" class="hover:theme-text">Ejemplos</a>
+                <a href="/#ejercicios" class="hover:theme-text">Ejercicios</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb -->
+        <div class="text-sm mb-6 text-gray-600">
+            <a href="/" class="hover:underline">Inicio</a> &gt; 
+            <a href="/conceptos" class="hover:underline">Conceptos POO</a> &gt; 
+            <span>Objetos</span>
+        </div>
+        
+        <!-- Header Temático -->
+        <div class="text-center mb-8">
+            <span class="text-6xl animate-pulse">{{ analogia.icono }}</span>
+            <h1 class="text-4xl font-bold theme-text mt-4">¿Qué es un Objeto?</h1>
+            <p class="text-gray-600 mt-2">La instancia concreta de una clase en Programación Orientada a Objetos</p>
+        </div>
+
+        <!-- Explicación Dinámica -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mx-auto max-w-4xl transition-all">
+            <div class="mb-8">
+                <p class="text-xl text-gray-700 leading-relaxed">
+                    <strong class="theme-text text-2xl">Un objeto es como {{ analogia.nombre.lower() }}.</strong><br>
+                    {{ analogia.descripcion }}
+                </p>
+            </div>
+
+            <!-- Imagen Temática con overlay -->
+            <div class="relative mb-8 overflow-hidden rounded-lg">
+                <img src="{{ url_for('static', filename='images/' + analogia.imagen_url.split('/')[-1]) }}" 
+                     alt="{{ analogia.nombre }}" 
+                     class="w-full h-80 object-cover rounded-lg transition-all hover:scale-105">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                    <p class="text-white font-semibold">{{ analogia.nombre }}</p>
+                </div>
+            </div>
+
+            <!-- Definición formal -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8 border-l-4 theme-border">
+                <h3 class="text-xl font-semibold mb-3">💡 Definición Formal</h3>
+                <p class="text-gray-700">Un <strong>objeto</strong> en programación orientada a objetos es una instancia específica de una clase. Contiene valores concretos para sus atributos y puede ejecutar métodos únicos que definen su comportamiento.</p>
+            </div>
+
+            <!-- Atributos y Métodos -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="p-6 bg-gray-50 rounded-lg shadow-sm card-hover transition-all">
+                    <h3 class="text-xl font-semibold theme-text mb-3 flex items-center">
+                        <span class="mr-2">📋</span> Atributos
+                    </h3>
+                    <p class="text-gray-600 mb-4">Los atributos son los valores específicos que definen a este objeto:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        {% for atributo in analogia.atributos %}
+                            <li class="text-gray-700">{{ atributo }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="p-6 bg-gray-50 rounded-lg shadow-sm card-hover transition-all">
+                    <h3 class="text-xl font-semibold theme-text mb-3 flex items-center">
+                        <span class="mr-2">⚙️</span> Métodos
+                    </h3>
+                    <p class="text-gray-600 mb-4">Los métodos son las acciones únicas que este objeto puede realizar:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        {% for metodo in analogia.metodos %}
+                            <li class="text-gray-700">{{ metodo }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Ejemplo de Código -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold theme-text mb-3">🧩 Ejemplo de Código</h3>
+                <div class="p-4 bg-gray-800 rounded-lg relative">
+                    <button onclick="copyCode()" class="absolute top-2 right-2 bg-gray-700 text-white p-1 rounded hover:bg-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path>
+                            <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path>
+                        </svg>
+                    </button>
+                    <pre class="text-white overflow-x-auto language-python"><code id="codeBlock">{{ analogia.ejemplo_codigo }}</code></pre>
+                </div>
+            </div>
+
+            <!-- Sección de aplicaciones reales -->
+            <div class="bg-gray-50 p-6 rounded-lg mb-8">
+                <h3 class="text-xl font-semibold theme-text mb-3">🌍 En el mundo real</h3>
+                <p class="text-gray-700 mb-4">Los objetos son fundamentales en el desarrollo de software. Algunos ejemplos de uso real incluyen:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Creación de usuarios en redes sociales (cada usuario es un objeto).</li>
+                    <li>Modelado de productos en un e-commerce (cada producto es un objeto).</li>
+                    <li>Simulación de entidades en videojuegos (cada personaje es un objeto).</li>
+                    <li>Gestión de transacciones bancarias (cada transacción es un objeto).</li>
+                </ul>
+            </div>
+            
+            <!-- Botón para Nueva Analogía -->
+            <div class="text-center mt-8">
+                <a href="/objeto" 
+                   class="inline-block px-8 py-3 text-white rounded-lg theme-bg hover:opacity-90 transition-all" 
+                   style="background-color: {{ analogia.color_primario }}">
+                    <span class="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                        </svg>
+                        Ver Otra Explicación
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>POO para Todos - Aprende conceptos de programación de manera sencilla</p>
+            <div class="mt-4">
+                <a href="/acerca" class="text-gray-300 hover:text-white mx-2">Acerca de</a>
+                <a href="/contacto" class="text-gray-300 hover:text-white mx-2">Contacto</a>
+                <a href="/terminos" class="text-gray-300 hover:text-white mx-2">Términos</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        function copyCode() {
+            const codeBlock = document.getElementById('codeBlock');
+            const textArea = document.createElement('textarea');
+            textArea.value = codeBlock.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Código copiado al portapapeles');
+        }
+    </script>
+</body>
+</html>

@@ -21,11 +21,9 @@ objeto_controller = ObjetoController()
 def mostrar_clase():
     return clase_controller.explicar_clase()
 
-#@app.route('/objeto')
-#def mostrar_objeto():
-#    lesson = objeto_controller.get_lesson_data(1)
-#    return render_template('theory/lesson_1.html', lesson=lesson)
-
+@app.route('/objeto')
+def objeto():
+    return ObjetoController().explicar_objeto()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
