@@ -23,29 +23,65 @@
             color: #155724;
             border-color: #c3e6cb;
         }
+        .error-input {
+            border-color: #f56565;
+        }
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .success-message {
+            color: #38a169;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-lg shadow-md w-96">
         <h1 class="text-2xl font-bold mb-6 text-center">Regístrate</h1>
         
-        <form method="POST" onsubmit="return validateForm()">
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-3 rounded {{ 'bg-red-100 text-red-700' if category == 'error' else 'bg-green-100 text-green-700' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('registro') }}" id="registro-form">
             <div class="mb-4">
                 <label class="block mb-2 font-semibold">Nombre</label>
                 <input type="text" name="nombre" required 
-                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 {{ 'error-input' if errors and errors.nombre }}">
+                {% if errors and errors.nombre %}
+                    <p class="error-message">{{ errors.nombre }}</p>
+                {% endif %}
+                <p id="nombre-error" class="error-message hidden"></p>
             </div>
             
             <div class="mb-4">
                 <label class="block mb-2 font-semibold">Email</label>
                 <input type="email" name="email" required
-                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 {{ 'error-input' if errors and errors.email }}">
+                {% if errors and errors.email %}
+                    <p class="error-message">{{ errors.email }}</p>
+                {% endif %}
+                <p id="email-error" class="error-message hidden"></p>
             </div>
             
             <div class="mb-6">
                 <label class="block mb-2 font-semibold">Contraseña</label>
                 <input type="password" name="password" required
-                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 {{ 'error-input' if errors and errors.password }}">
+                {% if errors and errors.password %}
+                    <p class="error-message">{{ errors.password }}</p>
+                {% endif %}
+                <p id="password-error" class="error-message hidden"></p>
             </div>
             
             <button type="submit" 
@@ -95,6 +131,54 @@
             var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(email);
         }
+
+        document.getElementById('registro-form').addEventListener('submit', function(event) {
+            let valid = true;
+            
+            // Validar nombre
+            const nombreInput = document.querySelector('input[name="nombre"]');
+            const nombreError = document.getElementById('nombre-error');
+            if (nombreInput.value.trim() === '') {
+                nombreError.textContent = 'El nombre es obligatorio';
+                nombreError.classList.remove('hidden');
+                nombreInput.classList.add('error-input');
+                valid = false;
+            } else {
+                nombreError.classList.add('hidden');
+                nombreInput.classList.remove('error-input');
+            }
+            
+            // Validar email
+            const emailInput = document.querySelector('input[name="email"]');
+            const emailError = document.getElementById('email-error');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                emailError.textContent = 'Introduce un correo electrónico válido';
+                emailError.classList.remove('hidden');
+                emailInput.classList.add('error-input');
+                valid = false;
+            } else {
+                emailError.classList.add('hidden');
+                emailInput.classList.remove('error-input');
+            }
+            
+            // Validar contraseña
+            const passwordInput = document.querySelector('input[name="password"]');
+            const passwordError = document.getElementById('password-error');
+            if (passwordInput.value.length < 6) {
+                passwordError.textContent = 'La contraseña debe tener al menos 6 caracteres';
+                passwordError.classList.remove('hidden');
+                passwordInput.classList.add('error-input');
+                valid = false;
+            } else {
+                passwordError.classList.add('hidden');
+                passwordInput.classList.remove('error-input');
+            }
+            
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>

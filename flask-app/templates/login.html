@@ -33,23 +33,53 @@
         .popup-overlay.active {
             display: block;
         }
+        .error-input {
+            border-color: #f56565;
+        }
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .success-message {
+            color: #38a169;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-lg shadow-md w-96">
         <h1 class="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h1>
         
-        <form method="POST" onsubmit="return validateForm(event)">
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-3 rounded {{ 'bg-red-100 text-red-700' if category == 'error' else 'bg-green-100 text-green-700' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('login') }}">
             <div class="mb-4">
                 <label class="block mb-2">Email</label>
                 <input type="email" name="email" required
-                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 {{ 'error-input' if errors and errors.email }}">
+                {% if errors and errors.email %}
+                    <p class="error-message">{{ errors.email }}</p>
+                {% endif %}
             </div>
             
             <div class="mb-6">
                 <label class="block mb-2">Contraseña</label>
                 <input type="password" name="password" required
-                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 {{ 'error-input' if errors and errors.password }}">
+                {% if errors and errors.password %}
+                    <p class="error-message">{{ errors.password }}</p>
+                {% endif %}
             </div>
             
             <button type="submit" 
