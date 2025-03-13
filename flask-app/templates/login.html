@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - POO para Todos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .popup.active {
+            display: block;
+        }
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .popup-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-96">
+        <h1 class="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h1>
+        
+        <form method="POST" onsubmit="return validateForm(event)">
+            <div class="mb-4">
+                <label class="block mb-2">Email</label>
+                <input type="email" name="email" required
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div class="mb-6">
+                <label class="block mb-2">Contraseña</label>
+                <input type="password" name="password" required
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <button type="submit" 
+                    class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition duration-200">
+                Iniciar Sesión
+            </button>
+        </form>
+        
+        <p class="mt-4 text-center">
+            ¿No tienes cuenta? 
+            <a href="{{ url_for('registro') }}" class="text-blue-500 hover:underline">Regístrate</a>
+        </p>
+    </div>
+
+    <div id="popup-overlay" class="popup-overlay"></div>
+    <div id="popup-message" class="popup">
+        <p id="popup-text"></p>
+        <button onclick="closePopup()" class="bg-blue-500 text-white p-2 rounded mt-4 hover:bg-blue-600 transition duration-200">Cerrar</button>
+    </div>
+
+    <script>
+        function validateForm(event) {
+            event.preventDefault();
+            const email = event.target.email.value;
+            const password = event.target.password.value;
+
+            // Simulate server-side validation
+            if (email !== "test@example.com") {
+                showPopup("El correo no existe.");
+                return false;
+            }
+            if (password !== "password123") {
+                showPopup("Contraseña incorrecta.");
+                return false;
+            }
+
+            // If validation passes, submit the form
+            event.target.submit();
+        }
+
+        function showPopup(message) {
+            document.getElementById('popup-text').innerText = message;
+            document.getElementById('popup-overlay').classList.add('active');
+            document.getElementById('popup-message').classList.add('active');
+        }
+
+        function closePopup() {
+            document.getElementById('popup-overlay').classList.remove('active');
+            document.getElementById('popup-message').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
