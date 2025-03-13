@@ -16,6 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar la aplicación
 COPY . .
 
+
 # Variables de entorno
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production

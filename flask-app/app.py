@@ -1,13 +1,15 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request # Import request
 from controllers.theory_controller import TheoryController
 from controllers.clase_controller import ClaseController
 import json
+from controllers.ai_controller import AIController # Import AIController
 
 app = Flask(__name__, static_folder='static')
 app.config['TEMPLATES_AUTO_RELOAD'] = True  # Recarga automática de templates
 
 theory_controller = TheoryController()
 clase_controller = ClaseController()
+ai_controller = AIController() # Instantiate AIController
 
 @app.route('/theory/<int:lesson_id>')
 def theory_lesson(lesson_id):
@@ -41,6 +43,10 @@ def mostrar_clase():
         "icono": analogia[7],
         "color_primario": analogia[8]
     })
+
+@app.route('/explain', methods=['POST']) # Add the /explain route
+def explain():
+    return ai_controller.explain_concept()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
