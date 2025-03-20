@@ -26,6 +26,10 @@ quiz_controller = QuizController()
 #def theory_lesson(lesson_id):
 #    lesson = theory_controller.get_lesson_data(lesson_id)
 #    return render_template('theory/lesson_1.html', lesson=lesson)
+@app.route('/')
+def inicio():
+    return render_template('inicio.html')
+
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     return auth_controller.registro()

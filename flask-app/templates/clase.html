@@ -19,9 +19,9 @@
         <div class="container mx-auto px-4 flex justify-between items-center">
             <a href="/" class="font-bold text-xl theme-text">POO para Todos</a>
             <div class="flex space-x-4">
-                <a href="/#conceptos" class="hover:theme-text">Conceptos</a>
-                <a href="/#ejemplos" class="hover:theme-text">Ejemplos</a>
-                <a href="/#ejercicios" class="hover:theme-text">Ejercicios</a>
+                <a href="#definicion-formal" class="hover:theme-text">Conceptos</a>
+                <a href="#en-el-mundo-real" class="hover:theme-text">Ejemplos</a>
+                <a href="#mini-quiz" class="hover:theme-text">Ejercicios</a>
             </div>
         </div>
     </nav>
@@ -29,15 +29,15 @@
     <div class="container mx-auto px-4 py-8">
         <!-- Breadcrumb -->
         <div class="text-sm mb-6 text-gray-600">
-            <a href="/" class="hover:underline">Inicio</a> &gt; 
-            <a href="/conceptos" class="hover:underline">Conceptos POO</a> &gt; 
+            <a href="#ini" class="hover:underline">Inicio</a> &gt; 
+            <a href="#con" class="hover:underline">Conceptos POO</a> &gt; 
             <span>Clases</span>
         </div>
         
         <!-- Header Temático -->
         <div class="text-center mb-8">
             <span class="text-6xl animate-pulse">{{ analogia.icono }}</span>
-            <h1 class="text-4xl font-bold theme-text mt-4">¿Qué es una Clase?</h1>
+            <h1 id="ini" class="text-4xl font-bold theme-text mt-4">¿Qué es una Clase?</h1>
             <p class="text-gray-600 mt-2">La pieza fundamental de la Programación Orientada a Objetos</p>
         </div>
 
@@ -61,13 +61,14 @@
             </div>
 
             <!-- Definición formal -->
-            <div class="bg-gray-50 rounded-lg p-6 mb-8 border-l-4 theme-border">
-                <h3 class="text-xl font-semibold mb-3">💡 Definición Formal</h3>
+            <!-- Definición formal -->
+            <div id="definicion-formal" class="bg-gray-50 rounded-lg p-6 mb-8 border-l-4 theme-border">
+                <h3 class="text-xl font-semibold mb-3">💡Definición Formal</h3>
                 <p class="text-gray-700">Una <strong>clase</strong> en programación orientada a objetos es una plantilla o modelo que define las propiedades (atributos) y comportamientos (métodos) comunes a todos los objetos de cierto tipo. Funciona como un plano que permite crear múltiples instancias (objetos) con características similares.</p>
             </div>
 
             <!-- Atributos y Métodos -->
-            <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div id="con" class="grid md:grid-cols-2 gap-6 mb-8">
                 <div class="p-6 bg-gray-50 rounded-lg shadow-sm card-hover transition-all">
                     <h3 class="text-xl font-semibold theme-text mb-3 flex items-center">
                         <span class="mr-2">📋</span> Atributos
@@ -107,7 +108,7 @@
             </div>
 
             <!-- Sección de aplicaciones reales -->
-            <div class="bg-gray-50 p-6 rounded-lg mb-8">
+            <div id="en-el-mundo-real" class="bg-gray-50 p-6 rounded-lg mb-8"></div>
                 <h3 class="text-xl font-semibold theme-text mb-3">🌍 En el mundo real</h3>
                 <p class="text-gray-700 mb-4">Las clases son fundamentales en el desarrollo de software profesional. Algunos ejemplos de uso real incluyen:</p>
                 <ul class="list-disc pl-5 space-y-2">
@@ -116,27 +117,13 @@
                     <li>Creación de juegos y simulaciones</li>
                     <li>Implementación de sistemas complejos como frameworks y bibliotecas</li>
                 </ul>
-            </div>
             
-            <!-- Conceptos relacionados -->
-            <div class="grid md:grid-cols-3 gap-4 mb-8">
-                <a href="objects" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center space-x-2">
-                    <span class="text-2xl">🧩</span>
-                    <span>Objetos</span>
-                    <a  class="text-blue-500">Regístrate</a>
-                </a>
-                <a href="/concepto/instanciacion" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center space-x-2">
-                    <span class="text-2xl">🔨</span>
-                    <span>Instanciación</span>
-                </a>
-                <a href="/concepto/herencia" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center space-x-2">
-                    <span class="text-2xl">👪</span>
-                    <span>Herencia</span>
-                </a>
-            </div>
-
+                <br>
+                <br>
+            
+            
             <!-- Mini quiz interactivo -->
-            <div class="bg-gray-50 p-6 rounded-lg mb-8">
+            <div id="mini-quiz" class="bg-gray-50 p-6 rounded-lg mb-8">
                 <h3 class="text-xl font-semibold theme-text mb-3">🧠 Pon a prueba tu conocimiento</h3>
                 <p class="text-gray-700 mb-4">¿Qué parte de una clase define sus características o propiedades?</p>
                 <div class="space-y-2">
@@ -146,6 +133,20 @@
                 </div>
                 <div id="quizFeedback" class="mt-3 hidden"></div>
             </div>
+
+            <!-- Mensaje de felicitación y redirección -->
+            <div class="bg-gray-50 p-6 rounded-lg mb-8">
+                <h3 class="text-2xl font-semibold text-green-700 mb-3">🎉 ¡Felicidades!</h3>
+                <p class="text-gray-700 mb-4">Has aprendido sobre las clases en la Programación Orientada a Objetos. Ahora que entiendes que es una clase estas listo para poder explorar mas, es hora de hablar sobre los Objetos, tambien conocidos como Instancia de una clase.</p>
+                <a href="/objeto" class="inline-block px-8 py-3 text-white rounded-lg theme-bg hover:opacity-90 transition-all" style="background-color: {{ analogia.color_primario }}">
+                    Continuar a Objetos
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1 inline" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+            </div>
+
+
         </div>
 
         <!-- Navegación entre conceptos -->

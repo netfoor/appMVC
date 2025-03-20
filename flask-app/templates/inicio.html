@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a POO para Todos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        .hero-bg {
+            background: linear-gradient(135deg, #6EE7B7, #3B82F6);
+        }
+        .btn-primary {
+            background-color: #3B82F6;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Hero Section -->
+    <div class="hero-bg text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-5xl font-bold mb-6 animate__animated animate__fadeInDown">
+                ¡Bienvenido a <span class="text-yellow-300">POO para Todos</span>!
+            </h1>
+            <p class="text-xl mb-8 animate__animated animate__fadeInUp">
+                Aprende Programación Orientada a Objetos de manera sencilla y divertida. 
+                Explora conceptos, resuelve quizzes y mejora tus habilidades.
+            </p>
+            <div class="flex justify-center space-x-4 animate__animated animate__fadeIn">
+                <a href="{{ url_for('registro') }}" 
+                   class="btn-primary px-8 py-3 rounded-lg text-lg font-semibold">
+                    Regístrate
+                </a>
+                <a href="{{ url_for('login') }}" 
+                   class="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100">
+                    Inicia Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container mx-auto px-4 py-16">
+        <h2 class="text-3xl font-bold text-center mb-12 animate__animated animate__fadeIn">
+            ¿Qué puedes hacer aquí?
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Tarjeta 1 -->
+            <div class="bg-white p-8 rounded-lg shadow-lg text-center animate__animated animate__fadeInLeft">
+                <span class="text-6xl mb-4">📚</span>
+                <h3 class="text-xl font-bold mb-4">Aprende Conceptos</h3>
+                <p class="text-gray-600">
+                    Explora explicaciones claras y ejemplos prácticos sobre Clases, Objetos y más.
+                </p>
+            </div>
+            <!-- Tarjeta 2 -->
+            <div class="bg-white p-8 rounded-lg shadow-lg text-center animate__animated animate__fadeInUp">
+                <span class="text-6xl mb-4">🧠</span>
+                <h3 class="text-xl font-bold mb-4">Resuelve Quizzes</h3>
+                <p class="text-gray-600">
+                    Pon a prueba tus conocimientos con quizzes interactivos y divertidos.
+                </p>
+            </div>
+            <!-- Tarjeta 3 -->
+            <div class="bg-white p-8 rounded-lg shadow-lg text-center animate__animated animate__fadeInRight">
+                <span class="text-6xl mb-4">🏆</span>
+                <h3 class="text-xl font-bold mb-4">Gana Insignias</h3>
+                <p class="text-gray-600">
+                    Desbloquea logros y mejora tu puntuación en la tabla de clasificación.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 POO para Todos. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>
