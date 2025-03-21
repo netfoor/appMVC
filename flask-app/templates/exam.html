@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejercicio UML - POO para Todos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        .theme-bg { background-color: #3b82f620; }
+        .theme-text { color: #3b82f6; }
+        .theme-border { border-color: #3b82f6; }
+        
+        .drag-area {
+            min-height: 150px;
+            border: 2px dashed #3b82f6;
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: #f3f4f6;
+        }
+        .drag-item {
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+        .drag-item:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .drag-item:active {
+            cursor: grabbing;
+        }
+        .drag-item.metodo {
+            border-left: 4px solid #3b82f6;
+        }
+        .drag-item.atributo {
+            border-left: 4px solid #10b981;
+        }
+        .drop-area {
+            min-height: 100px;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            background-color: #f9fafb;
+            transition: all 0.2s;
+        }
+        .drop-area.highlight {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .timer-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .timer-progress {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 1s linear;
+        }
+        .feedback {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        .feedback.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .heart {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .heart-active {
+            color: #ef4444;
+        }
+        .heart-inactive {
+            color: #d1d5db;
+        }
+        .uml-diagram {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: white;
+        }
+        .progress-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="theme-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold theme-text">Ejercicio UML: Clases y Objetos</h1>
+            <div class="flex items-center space-x-4">
+                <!-- Progreso -->
+                <div class="bg-white px-3 py-1 rounded-lg shadow flex items-center">
+                    <span class="mr-2">Progreso:</span>
+                    <div class="w-32 h-3 bg-gray-200 rounded-full">
+                        <div class="h-3 bg-green-500 rounded-full" style="width: {{ (ronda / total_rondas) * 100 }}%"></div>
+                    </div>
+                    <span class="ml-2">{{ ronda }}/{{ total_rondas }}</span>
+                </div>
+                
+                <!-- Vidas -->
+                <div class="flex">
+                    {% for i in range(3) %}
+                    <span class="heart {% if i < vidas %}heart-active{% else %}heart-inactive{% endif %}">❤</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de tiempo -->
+        <div class="timer-bar mb-6">
+            <div id="timerProgress" class="timer-progress"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Panel izquierdo: Diagrama UML -->
+            <div class="bg-white rounded-xl shadow-lg p-6 relative">
+                <h2 class="text-xl font-bold theme-text mb-4">Diagrama UML</h2>
+                <p class="text-gray-600 mb-6">Arrastra los elementos a las secciones correspondientes del diagrama.</p>
+                
+                <div class="uml-diagram">
+                    <div class="p-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold mb-2 text-center">Clase {{ clase[1] }}</h3>
+                    </div>
+                    
+                    <div class="p-4 border-b border-gray-200">
+                        <h4 class="text-md font-medium mb-2">Atributos</h4>
+                        <div id="atributos-drop" class="drop-area" data-type="atributo">
+                            <!-- Los atributos se colocarán aquí -->
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <h4 class="text-md font-medium mb-2">Métodos</h4>
+                        <div id="metodos-drop" class="drop-area" data-type="metodo">
+                            <!-- Los métodos se colocarán aquí -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Diagrama de relación -->
+                <div class="flex justify-center my-4">
+                    <div class="h-10 w-0.5 bg-gray-400"></div>
+                </div>
+                
+                <div class="uml-diagram mt-4 relative">
+                    <div class="progress-badge">+1</div>
+                    
+                    <div class="p-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold mb-2 text-center">Objeto de {{ clase[1] }}</h3>
+                    </div>
+                    
+                    <div class="p-4 border-b border-gray-200">
+                        <h4 class="text-md font-medium mb-2">Atributos</h4>
+                        <div id="objeto-atributos-drop" class="drop-area" data-type="atributo">
+                            <!-- Los atributos del objeto se colocarán aquí -->
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <h4 class="text-md font-medium mb-2">Métodos</h4>
+                        <div id="objeto-metodos-drop" class="drop-area" data-type="metodo">
+                            <!-- Los métodos del objeto se colocarán aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Panel derecho: Elementos para arrastrar -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold theme-text mb-4">Elementos disponibles</h2>
+                <p class="text-gray-600 mb-6">Arrastra estos elementos al diagrama UML de la izquierda.</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <h3 class="font-medium mb-2 flex items-center">
+                            <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                            Métodos
+                        </h3>
+                        <p class="text-sm text-gray-600">Acciones que puede realizar</p>
+                    </div>
+                    <div>
+                        <h3 class="font-medium mb-2 flex items-center">
+                            <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                            Atributos
+                        </h3>
+                        <p class="text-sm text-gray-600">Características o propiedades</p>
+                    </div>
+                </div>
+                
+                <div id="elementos-drag" class="drag-area">
+                    {% for elemento in elementos %}
+                    <div class="drag-item {{ elemento.tipo }}" draggable="true" data-tipo="{{ elemento.tipo }}">
+                        {{ elemento.valor }}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Botón de verificar -->
+                <button id="verificarBtn" class="w-full mt-6 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all">
+                    Verificar
+                </button>
+                
+                <!-- Feedback -->
+                <div id="feedback" class="feedback mt-6 p-4 rounded-lg text-center font-medium hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar variables
+        const timerProgress = document.getElementById('timerProgress');
+        const dropAreas = document.querySelectorAll('.drop-area');
+        const elementosDrag = document.getElementById('elementos-drag');
+        let timeLeft = 120; // 2 minutos por ronda
+        let dragItem = null;
+        let currentClaseId = {{ clase[0] }};
+        
+        // Timer
+        const timer = setInterval(() => {
+            timeLeft--;
+            timerProgress.style.width = `${(timeLeft / 120) * 100}%`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                alert("¡Tiempo agotado!");
+                window.location.href = "/resultados-quiz";
+            }
+        }, 1000);
+        
+        // Drag and Drop Setup
+        document.querySelectorAll('.drag-item').forEach(item => {
+            item.addEventListener('dragstart', handleDragStart);
+        });
+        
+        dropAreas.forEach(area => {
+            area.addEventListener('dragover', handleDragOver);
+            area.addEventListener('dragenter', handleDragEnter);
+            area.addEventListener('dragleave', handleDragLeave);
+            area.addEventListener('drop', handleDrop);
+        });
+        
+        function handleDragStart(e) {
+            dragItem = e.target;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.outerHTML);
+            setTimeout(() => e.target.classList.add('opacity-50'), 0);
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            return false;
+        }
+        
+        function handleDragEnter(e) {
+            this.classList.add('highlight');
+        }
+        
+        function handleDragLeave(e) {
+            this.classList.remove('highlight');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('highlight');
+            
+            // Verificar si el tipo de elemento coincide con el área de destino
+            const itemTipo = dragItem.dataset.tipo;
+            const areaTipo = this.dataset.type;
+            
+            if (itemTipo === areaTipo) {
+                // Si es el tipo correcto, agrega el elemento al área
+                const newItem = document.createElement('div');
+                newItem.innerHTML = dragItem.outerHTML;
+                newItem.firstChild.classList.remove('opacity-50');
+                newItem.firstChild.addEventListener('dragstart', handleDragStart);
+                this.appendChild(newItem.firstChild);
+                
+                // Eliminar el elemento original solo si viene del área de elementos
+                if (dragItem.parentNode === elementosDrag) {
+                    dragItem.remove();
+                }
+            } else {
+                // Si no es el tipo correcto, restaurar el elemento
+                dragItem.classList.remove('opacity-50');
+            }
+            
+            return false;
+        }
+        
+        // Verificar respuesta
+        document.getElementById('verificarBtn').addEventListener('click', () => {
+            // Recopilar los métodos y atributos colocados
+            const metodos = Array.from(document.querySelector('#metodos-drop').children)
+                .map(item => item.textContent.trim());
+            const atributos = Array.from(document.querySelector('#atributos-drop').children)
+                .map(item => item.textContent.trim());
+            const objetoMetodos = Array.from(document.querySelector('#objeto-metodos-drop').children)
+                .map(item => item.textContent.trim());
+            const objetoAtributos = Array.from(document.querySelector('#objeto-atributos-drop').children)
+                .map(item => item.textContent.trim());
+            
+            // Contar vidas actuales
+            const corazonesActivos = document.querySelectorAll('.heart-active').length;
+            
+            fetch('/verificar-respuesta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clase_id: currentClaseId,
+                    metodos: metodos.concat(objetoMetodos),
+                    atributos: atributos.concat(objetoAtributos),
+                    vidas: corazonesActivos
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const feedbackElement = document.getElementById('feedback');
+                
+                if (data.es_correcto) {
+                    // Mostrar feedback positivo
+                    feedbackElement.textContent = '¡Correcto!';
+                    feedbackElement.className = 'feedback mt-6 p-4 rounded-lg text-center font-medium bg-green-100 text-green-800';
+                    
+                    // Si hay una siguiente ronda, prepararla
+                    if (!data.juego_terminado && data.siguiente_clase) {
+                        setTimeout(() => {
+                            clearInterval(timer); // Detener el timer actual
+                            
+                            // Si quieres cambiar toda la página a la siguiente clase:
+                            window.location.href = '/exam?ronda=' + data.ronda_actual;
+                            
+                            // Alternativa: Actualizar dinámicamente la página actual con la nueva clase
+                            // Esto requeriría más código para actualizar los elementos del DOM
+                        }, 1500);
+                    } else if (data.juego_terminado) {
+                        // Si el juego ha terminado con éxito
+                        setTimeout(() => {
+                            window.location.href = '/resultados-quiz?score=' + data.puntuacion;
+                        }, 1500);
+                    }
+                } else {
+                    // Mostrar feedback negativo
+                    feedbackElement.textContent = 'Incorrecto. Inténtalo de nuevo.';
+                    feedbackElement.className = 'feedback mt-6 p-4 rounded-lg text-center font-medium bg-red-100 text-red-800';
+                    
+                    // Actualizar vidas
+                    actualizarVidas(data.vidas);
+                    
+                    // Si se perdieron todas las vidas, terminar el juego
+                    if (data.vidas <= 0) {
+                        setTimeout(() => {
+                            window.location.href = '/resultados-quiz?score=' + data.puntuacion;
+                        }, 1500);
+                    }
+                }
+                
+                feedbackElement.classList.remove('hidden');
+                setTimeout(() => feedbackElement.classList.add('show'), 10);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al procesar tu respuesta');
+            });
+        });
+        
+        // Función para actualizar vidas
+        function actualizarVidas(nuevasVidas) {
+            const corazones = document.querySelectorAll('.heart');
+            corazones.forEach((corazon, index) => {
+                if (index < nuevasVidas) {
+                    corazon.classList.add('heart-active');
+                    corazon.classList.remove('heart-inactive');
+                } else {
+                    corazon.classList.remove('heart-active');
+                    corazon.classList.add('heart-inactive');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ import json
 from controllers.auth_controller import AuthController
 from controllers.select_controller import SelectController
 from controllers.quiz_controller import QuizController
+from controllers.exam_controller import ExamController
 from dotenv import load_dotenv
 import os
 
@@ -22,6 +23,7 @@ objeto_controller = ObjetoController()
 select_controller = SelectController()
 auth_controller = AuthController()
 quiz_controller = QuizController()
+exam_controller = ExamController()
 
 #@app.route('/theory/<int:lesson_id>')
 #def theory_lesson(lesson_id):
@@ -42,6 +44,10 @@ def login():
 @app.route('/logout')
 def logout():
     return auth_controller.logout()
+
+@app.route('/exam')
+def exam():
+    return exam_controller.iniciar_quiz()
 
 app.add_url_rule('/seleccion', 
                  view_func=select_controller.seleccionar_objeto, 
