@@ -26,8 +26,8 @@ class ObjetoController:
             'id': analogia_tuple[0],
             'nombre': analogia_tuple[1],
             'descripcion': analogia_tuple[2],
-            'atributos': parse_json(analogia_tuple[3]),  # Verifica antes de convertir
-            'metodos': parse_json(analogia_tuple[4]),    # Verifica antes de convertir
+            'atributos': parse_json(analogia_tuple[3]),  
+            'metodos': parse_json(analogia_tuple[4]),    
             'atributos_uml': parse_json(analogia_tuple[5]),
             'metodos_uml': parse_json(analogia_tuple[6]),
             'ejemplo_codigo': analogia_tuple[7],

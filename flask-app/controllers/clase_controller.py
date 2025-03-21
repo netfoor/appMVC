@@ -35,5 +35,5 @@ class ClaseController:
             'color_primario': analogia_tuple[8],
             'atributos_uml': atributos,  
             'metodos_uml': metodos,     
-            'cita_apa': "ciat. https://"
+            'cita_apa': "Make It Real. (s.f.). Clases y objetos. En Programación orientada por objetos en Ruby. Recuperado de https://makeitrealcamp.gitbook.io/programacion-orientada-por-objetos-en-ruby/clases-y-objetos"
         }

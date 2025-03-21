@@ -10,6 +10,27 @@
         .theme-bg { background-color: {% if analogia %}{{ analogia.color_primario }}20{% else %}#f3f4f6{% endif %}; }
         .theme-text { color: {% if analogia %}{{ analogia.color_primario }}{% else %}#3b82f6{% endif %}; }
         .theme-border { border-color: {% if analogia %}{{ analogia.color_primario }}{% else %}#3b82f6{% endif %}; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .transition-all { transition: all 0.3s ease; }
+        .mermaid .classGroup text {
+            cursor: help;
+            transition: all 0.2s;
+        }
+        .uml-legend-item {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .uml-legend-item:hover {
+            border-color: {% if analogia %}{{ analogia.color_primario }}{% else %}#3b82f6{% endif %};
+            transform: translateX(5px);
+        }
+        #umlTooltip {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="theme-bg min-h-screen">
@@ -20,6 +41,22 @@
     </nav>
 
     <div class="container mx-auto px-4 py-8">
+        <!-- Descripción general -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold theme-text mb-4">Explorando Clases y Objetos</h2>
+            <p class="text-gray-700 mb-4">
+                Las clases y los objetos son los conceptos más importantes de la Programación Orientada por Objetos (POO), y están fuertemente relacionados. 
+                <blockquote class="mt-4 pl-4 border-l-2 theme-border text-gray-600">
+                    Make It Real. (s.f.). Clases y objetos. En Programación orientada por objetos en Ruby. Recuperado de https://makeitrealcamp.gitbook.io/programacion-orientada-por-objetos-en-ruby/clases-y-objetos
+                </blockquote>
+                <blockquote></blockquote>
+                <br>
+                Da click en la lista desplegable para ver más ejemplos de cada uno. 
+
+                ¡Aprende a tu ritmo y descubre cómo estos conceptos pueden ayudarte a entender mejor los conceptos!
+            </p>
+        </div>
+        
         <!-- Selector de Clase -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
             <h2 class="text-2xl font-bold theme-text mb-4">Selecciona una Clase</h2>
@@ -67,21 +104,55 @@
                         + {{ method }}()
                         {% endfor %}
                     }
+
+                    
             </div>
 
             <!-- Descripción y Ejemplo -->
             <div class="mt-8 space-y-4">
-                <div class="prose max-w-none">
-                    <p>{{ analogia.descripcion }}</p>
-                </div>
-                
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h4 class="font-bold mb-2">Ejemplo de código:</h4>
-                    <pre><code class="language-python">{{ analogia.ejemplo_codigo }}</code></pre>
+                <blockquote class="mt-4 pl-4 border-l-2 theme-border text-gray-600">
+                    Figura {{analogia.id}}. Diagrama UML de la clase {{ analogia.nombre }} y un objeto de la misma.
+                </blockquote>
+
+                <!-- Imagen temática -->
+                <div class="relative overflow-hidden rounded-lg">
+                    <img src="{{ url_for('static', filename='images/' + analogia.imagen_url.split('/')[-1]) }}" 
+                         alt="{{ analogia.nombre }}" 
+                         class="w-full h-48 object-cover rounded-lg transition-all hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                        
+                        <p class="text-white font-semibold">{{ analogia.nombre }}</p>
+                    </div>
                 </div>
             </div>
         </div>
         {% endif %}
+
+        <!-- Botón para evaluación -->
+        <div class="text-center mt-10 mb-6">
+            <div class="bg-white rounded-xl shadow-lg p-6 max-w-2xl mx-auto">
+                <h3 class="text-xl font-bold theme-text mb-4">¡Pon a prueba tus conocimientos!</h3>
+                <p class="text-gray-700 mb-6">
+                    Has explorado conceptos fundamentales sobre Clases y Objetos en la programación orientada a objetos.
+                    ¿Te sientes preparado para demostrar lo que has aprendido? ¡Acepta el desafío!
+                </p>
+                <a href="/exam" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-md">
+                    Comenzar evaluación
+                </a>
+                <p class="text-sm text-gray-500 mt-4">Puedes volver a consultar estos conceptos en cualquier momento.</p>
+<br>
+                <a href="/objeto" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-md mr-5">
+                    ¡Regresar a Objetos!
+                </a>
+
+                <a href="/clase" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-md">
+                    ¡Regresar a Clases!
+                </a>
+            </div>
+<br>
+                
+            </div>
+        </div>
     </div>
 
     <script>
@@ -89,6 +160,31 @@
             startOnLoad: true,
             theme: 'neutral',
             securityLevel: 'loose'
+        });
+
+        // Redibujar al cambiar tamaño
+        window.addEventListener('resize', () => {
+            mermaid.init(undefined, '.mermaid');
+        });
+
+        // Tooltips interactivos
+        document.querySelectorAll('.mermaid .classTitle, .mermaid .classAttr, .mermaid .classMethod').forEach(element => {
+            element.addEventListener('mouseover', (e) => {
+                const tooltip = document.getElementById('umlTooltip');
+                const type = e.target.closest('.classTitle') ? 'Clase' : 
+                            e.target.closest('.classAttr') ? 'Atributo' : 'Método';
+                
+                tooltip.innerHTML = `<strong>${type}:</strong> ${e.target.textContent}`;
+                tooltip.classList.remove('hidden');
+                
+                const rect = e.target.getBoundingClientRect();
+                tooltip.style.left = `${rect.left + window.scrollX}px`;
+                tooltip.style.top = `${rect.bottom + window.scrollY + 5}px`;
+            });
+
+            element.addEventListener('mouseout', () => {
+                document.getElementById('umlTooltip').classList.add('hidden');
+            });
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>

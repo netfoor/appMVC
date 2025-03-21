@@ -51,9 +51,16 @@
             <!-- Definición formal con cita APA -->
             <div id="definicion-formal" class="bg-gray-50 rounded-lg p-6 mb-8 border-l-4 theme-border">
                 <h3 class="text-xl font-semibold mb-3"> <span class="text-6xl animate-pulse">{{ analogia.icono }}</span> Definición Formal (APA)</h3>
-                <p class="text-gray-700">{{ analogia.descripcion }}</p>
+                <p class="text-gray-700 mt-4">
+                    Ahora piensa en ejemplos específicos de <strong>{{ analogia.nombre }}</strong>: 
+                    
+                    Estos son los objetos. Para cada <strong>{{ analogia.nombre }}</strong>, puedes llenar los datos de la plantilla: 
+                    {% for attr in analogia.atributos %}
+                        {% if not loop.first %}, {% endif %}{{ attr }}
+                    {% endfor %}.
+                </p>
                 <blockquote class="mt-4 pl-4 border-l-2 theme-border text-gray-600">
-                    {{ analogia.cita_apa }}
+                    Make It Real. (s.f.). Clases y objetos. En Programación orientada por objetos en Ruby. Recuperado de https://makeitrealcamp.gitbook.io/programacion-orientada-por-objetos-en-ruby/clases-y-objetos
                 </blockquote>
             </div>
 
@@ -116,6 +123,8 @@
             <div class="bg-white rounded-xl shadow-lg p-6 sticky top-8">
                 <h3 class="text-xl font-bold theme-text mb-4">🔍 Leyenda UML</h3>
                 <div class="space-y-4">
+                    
+
                     <div class="uml-legend-item" data-section="class">
                         <div class="font-bold mb-1">📦 Nombre de Clase</div>
                         <p class="text-sm text-gray-600">Define el tipo de objeto</p>
@@ -135,20 +144,50 @@
                         <p class="text-sm text-gray-600">Acciones disponibles</p>
                     </div>
 
-                    <div>
-                        <div class="text-center mt-8">
-                            <a href="/seleccionar-objeto" 
-                               class="inline-block px-8 py-3 text-white rounded-lg theme-bg hover:opacity-90 transition-all" 
+                    <div class="space-y-6 mt-6"></div>
+                        <div class="text-center">
+                            <a href="javascript:location.reload();" 
+                               class="inline-block w-full px-8 py-3 text-white rounded-lg transition-all" 
                                style="background-color: {{ analogia.color_primario }}">
                                 <span class="flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"></svg>
                                         <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
                                     </svg>
-                                    Ver explicación de Objetos
+                                    Ver otra explicación
                                 </span>
                             </a>
                         </div>
+
+                        <div class="text-center">
+                            <a href="/seleccion" 
+                               class="inline-block w-full px-8 py-3 text-white rounded-lg transition-all" 
+                               style="background-color: {{ analogia.color_primario }}">
+                                <span class="flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                    Seleccionar más ejemplos
+                                </span>
+                            </a>
+                        </div>
+
+                        
+                    <div class="text-center">
+                        <a href="/clase" 
+                           class="inline-block w-full px-8 py-3 text-white rounded-lg transition-all" 
+                           style="background-color: {{ analogia.color_primario }}">
+                            <span class="flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                </svg>
+                                Regresar a Clases
+                            </span>
+                        </a>
                     </div>
+                    </div>
+
+
+
                 </div>
             </div>
         </div>
