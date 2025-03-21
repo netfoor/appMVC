@@ -1,5 +1,6 @@
 from flask import render_template
 from models.objeto_model import ObjetoModel
+import json
 
 class ObjetoController:
     def __init__(self):
@@ -15,14 +16,22 @@ class ObjetoController:
         if not analogia_tuple:
             return {}
 
+        def parse_json(value):
+            """Verifica si el valor es una cadena JSON y lo convierte, o lo devuelve tal cual."""
+            if isinstance(value, str):
+                return json.loads(value)
+            return value
+
         return {
             'id': analogia_tuple[0],
             'nombre': analogia_tuple[1],
             'descripcion': analogia_tuple[2],
-            'atributos': analogia_tuple[3],
-            'metodos': analogia_tuple[4],
-            'ejemplo_codigo': analogia_tuple[5],
-            'imagen_url': analogia_tuple[6],
-            'icono': analogia_tuple[7],
-            'color_primario': analogia_tuple[8]
+            'atributos': parse_json(analogia_tuple[3]),  # Verifica antes de convertir
+            'metodos': parse_json(analogia_tuple[4]),    # Verifica antes de convertir
+            'atributos_uml': parse_json(analogia_tuple[5]),
+            'metodos_uml': parse_json(analogia_tuple[6]),
+            'ejemplo_codigo': analogia_tuple[7],
+            'imagen_url': analogia_tuple[8],
+            'icono': analogia_tuple[9],
+            'color_primario': analogia_tuple[10]
         }

@@ -1,4 +1,3 @@
-# objeto_model.py
 import psycopg2
 
 class ObjetoModel:
@@ -12,5 +11,6 @@ class ObjetoModel:
 
     def get_random_objeto(self):
         with self.conn.cursor() as cur:
-            cur.execute("SELECT * FROM objetos_analogias ORDER BY RANDOM() LIMIT 1")
+            # Asegúrate de que la consulta apunte a la nueva tabla
+            cur.execute("SELECT * FROM clases_exp_objetos ORDER BY RANDOM() LIMIT 1")
             return cur.fetchone()

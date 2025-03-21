@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Selecciona un Objeto - POO para Todos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        .theme-bg { background-color: {% if analogia %}{{ analogia.color_primario }}20{% else %}#f3f4f6{% endif %}; }
+        .theme-text { color: {% if analogia %}{{ analogia.color_primario }}{% else %}#3b82f6{% endif %}; }
+        .theme-border { border-color: {% if analogia %}{{ analogia.color_primario }}{% else %}#3b82f6{% endif %}; }
+    </style>
+</head>
+<body class="theme-bg min-h-screen">
+    <nav class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="/" class="font-bold text-xl theme-text">POO para Todos</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Selector de Clase -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold theme-text mb-4">Selecciona una Clase</h2>
+            <form method="GET" class="flex items-center gap-4">
+                <select name="clase_id" class="block w-full p-2 border rounded-lg theme-border"
+                        onchange="this.form.submit()">
+                    <option value="">-- Selecciona una clase --</option>
+                    {% for clase in clases %}
+                    <option value="{{ clase[0] }}" {% if clase_seleccionada == clase[0]|string %}selected{% endif %}>
+                        {{ clase[1] }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <!-- Diagrama UML (se muestra solo si hay selección) -->
+        {% if analogia %}
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-bold theme-text mb-4">¿Qué es un {{ analogia.nombre }}?</h3>
+            
+            <!-- Diagrama UML -->
+            <div class="mermaid">
+                classDiagram
+                    class {{ analogia.nombre | trim }} {
+                        {% for attr in analogia.atributos_uml %}
+                        {{ attr | trim }}
+                        {% endfor %}
+                        ---
+                        {% for method in analogia.metodos_uml %}
+                        {{ method | trim }}
+                        {% endfor %}
+                    }
+                    
+                    {{ analogia.nombre | trim }} <|-- objeto_{{ analogia.id }} : instancia
+                    
+                    class objeto_{{ analogia.id }} {
+                        + id: {{ analogia.id }}
+                        + nombre: {{ analogia.nombre }}
+                        {% for attr in analogia.atributos %}
+                        + {{ attr }}
+                        {% endfor %}
+                        ---
+                        {% for method in analogia.metodos %}
+                        + {{ method }}()
+                        {% endfor %}
+                    }
+            </div>
+
+            <!-- Descripción y Ejemplo -->
+            <div class="mt-8 space-y-4">
+                <div class="prose max-w-none">
+                    <p>{{ analogia.descripcion }}</p>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-bold mb-2">Ejemplo de código:</h4>
+                    <pre><code class="language-python">{{ analogia.ejemplo_codigo }}</code></pre>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'neutral',
+            securityLevel: 'loose'
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>

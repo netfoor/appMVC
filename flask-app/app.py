@@ -4,6 +4,7 @@ from controllers.clase_controller import ClaseController
 from controllers.objeto_controller import ObjetoController
 import json
 from controllers.auth_controller import AuthController
+from controllers.select_controller import SelectController
 from controllers.quiz_controller import QuizController
 from dotenv import load_dotenv
 import os
@@ -18,7 +19,7 @@ app.secret_key = 'fortino'  # Clave secreta para las sesiones
 theory_controller = TheoryController()
 clase_controller = ClaseController()
 objeto_controller = ObjetoController()
-
+select_controller = SelectController()
 auth_controller = AuthController()
 quiz_controller = QuizController()
 
@@ -41,6 +42,10 @@ def login():
 @app.route('/logout')
 def logout():
     return auth_controller.logout()
+
+app.add_url_rule('/seleccion', 
+                 view_func=select_controller.seleccionar_objeto, 
+                 methods=['GET'])
 
 # Ruta del Quiz
 @app.route('/quiz/<tema>')

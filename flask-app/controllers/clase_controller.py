@@ -5,15 +5,23 @@ class ClaseController:
     def __init__(self):
         self.model = ClaseModel()
 
+
     def explicar_clase(self):
         """Obtiene una analogía aleatoria y la prepara para la vista."""
         analogia = self._formatear_analogia(self.model.get_random_analogia())
         return render_template('clase.html', analogia=analogia)
+    
 
     def _formatear_analogia(self, analogia_tuple):
         """Convierte la tupla de la base de datos en un diccionario para la vista."""
         if not analogia_tuple:
             return {}
+        
+        # Formatear métodos y atributos para UML
+        atributos = [f"+ {a}" if not a.startswith(('-', '+', '#')) else a 
+                     for a in analogia_tuple[3]]
+        metodos = [f"{m}()" if '(' not in m else m 
+                   for m in analogia_tuple[4]]
 
         return {
             'id': analogia_tuple[0],
@@ -24,5 +32,8 @@ class ClaseController:
             'ejemplo_codigo': analogia_tuple[5],
             'imagen_url': analogia_tuple[6],
             'icono': analogia_tuple[7],
-            'color_primario': analogia_tuple[8]
+            'color_primario': analogia_tuple[8],
+            'atributos_uml': atributos,  
+            'metodos_uml': metodos,     
+            'cita_apa': "ciat. https://"
         }
