@@ -39,15 +39,15 @@ Este proyecto sigue el patrón Modelo-Vista-Controlador (MVC):
 
 ```
 flask-app/
-├── app.py                    # Punto de entrada de la aplicación Flask
-├── database.txt              # Base de datos del proyecto
-├── controllers/              # Controladores MVC
-├── models/                   # Modelos de datos
-├── services/                 # Servicios auxiliares
-├── static/                   # Recursos estáticos (CSS, JS, imágenes)
-├── templates/                # Plantillas HTML
-│   └── theory/               # Lecciones teóricas
-└── Dockerfile                # Configuración para Docker
+├── app.py                 
+├── database.txt           
+├── controllers/           
+├── models/                
+├── services/              
+├── static/                
+├── templates/             
+│   └── theory/          
+└── Dockerfile             
 ```
 
 ## Requisitos
@@ -66,11 +66,13 @@ flask-app/
     git clone https://github.com/tu-usuario/poo-para-todos.git
     cd poo-para-todos
     ```
+
 2.  Crea un archivo `.env` en la raíz del proyecto (opcional):
 
     ```bash
     cp .env.example .env
     ```
+
 3.  Construye y levanta los contenedores:
 
     ```bash
@@ -87,6 +89,7 @@ flask-app/
     git clone https://github.com/tu-usuario/poo-para-todos.git
     cd poo-para-todos
     ```
+
 2.  Crea un entorno virtual:
 
     ```bash
@@ -107,7 +110,7 @@ flask-app/
     python app.py
     ```
 
-5.  La aplicación estará disponible en `http://localhost:5000`
+    La aplicación estará disponible en `http://localhost:5000`
 
 ## Base de Datos
 
