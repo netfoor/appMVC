@@ -1,4 +1,4 @@
-```markdown
+
 # POO para Todos
 
 Esta aplicación es una plataforma educativa para aprender los conceptos de Programación Orientada a Objetos (POO) de manera interactiva y sencilla.
@@ -48,8 +48,8 @@ flask-app/
 ├── templates/             
 │   └── theory/          
 └── Dockerfile             
-```
 
+```
 ## Requisitos
 
 *   Docker y Docker Compose
@@ -63,8 +63,8 @@ flask-app/
 1.  Clona el repositorio:
 
     ```bash
-    git clone https://github.com/tu-usuario/poo-para-todos.git
-    cd poo-para-todos
+    git clone https://github.com/netfoor/appMVC.git
+    cd appMVC
     ```
 
 2.  Crea un archivo `.env` en la raíz del proyecto (opcional):
@@ -86,8 +86,8 @@ flask-app/
 1.  Clona el repositorio:
 
     ```bash
-    git clone https://github.com/tu-usuario/poo-para-todos.git
-    cd poo-para-todos
+    git clone https://github.com/netfoor/appMVC.git
+    cd appMVC
     ```
 
 2.  Crea un entorno virtual:
@@ -124,7 +124,7 @@ Con el contenedor en ejecución:
 
 ```bash
 docker exec -it clases-obj-flask-app-1 bash
-```
+
 
 Desde la terminal del contenedor, puedes manipular la base de datos:
 
@@ -203,4 +203,3 @@ Para preguntas o soporte, por favor abre un issue en el repositorio o contacta a
 Desarrollado con ❤️ para hacer la Programación Orientada a Objetos accesible para todos.
 
 Fortino Romero Mantilla
-```
