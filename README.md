@@ -1,64 +1,203 @@
+```markdown
 # POO para Todos
 
 Esta aplicación es una plataforma educativa para aprender los conceptos de Programación Orientada a Objetos (POO) de manera interactiva y sencilla.
 
+## Descripción del Proyecto
+
+POO para Todos es una aplicación web desarrollada con Flask que ofrece lecciones interactivas sobre Programación Orientada a Objetos. El proyecto está diseñado para proporcionar una experiencia de aprendizaje intuitiva utilizando:
+
+*   Explicaciones teóricas claras y concisas
+*   Ejemplos prácticos interactivos
+*   Ejercicios de codificación en tiempo real
+*   Cuestionarios y exámenes para evaluar el progreso
+*   Diseño responsivo y amigable para estudiantes de todos los niveles
+
+## Arquitectura del Proyecto (MVC)
+
+Este proyecto sigue el patrón Modelo-Vista-Controlador (MVC):
+
+### Modelo (Model)
+
+*   Ubicación: `models`
+*   Responsabilidad: Gestión de datos y lógica de negocio
+*   Componentes principales: `usuario_model.py`, `clase_model.py`, `quiz_model.py`, etc.
+
+### Vista (View)
+
+*   Ubicación: `templates`
+*   Responsabilidad: Presentación de la información al usuario
+*   Tecnologías: HTML, Tailwind CSS, Alpine.js, HTMX
+
+### Controlador (Controller)
+
+*   Ubicación: `controllers`
+*   Responsabilidad: Manejo de las peticiones del usuario y coordinación entre modelos y vistas
+*   Componentes principales: `theory_controller.py`, `clase_controller.py`, `auth_controller.py`, etc.
+
 ## Estructura del Proyecto
 
+```
+flask-app/
+├── app.py                    # Punto de entrada de la aplicación Flask
+├── database.txt              # Base de datos del proyecto
+├── controllers/              # Controladores MVC
+├── models/                   # Modelos de datos
+├── services/                 # Servicios auxiliares
+├── static/                   # Recursos estáticos (CSS, JS, imágenes)
+├── templates/                # Plantillas HTML
+│   └── theory/               # Lecciones teóricas
+└── Dockerfile                # Configuración para Docker
+```
+
+## Requisitos
+
+*   Docker y Docker Compose
+*   Python 3.10+ (para desarrollo local)
+*   Navegador web moderno
 
 ## Instalación del Entorno
 
-Para instalar y ejecutar la aplicación en tu entorno local, sigue estos pasos:
+### Usando Docker (Recomendado)
 
-1. Clona el repositorio:
-    ```sh
-    git clone <URL_DEL_REPOSITORIO>
-    cd <NOMBRE_DEL_REPOSITORIO>
+1.  Clona el repositorio:
+
+    ```bash
+    git clone https://github.com/tu-usuario/poo-para-todos.git
+    cd poo-para-todos
     ```
+2.  Crea un archivo `.env` en la raíz del proyecto (opcional):
 
-2. Construye y levanta los contenedores de Docker:
-    ```sh
+    ```bash
+    cp .env.example .env
+    ```
+3.  Construye y levanta los contenedores:
+
+    ```bash
     docker-compose up --build
     ```
 
-3. La aplicación estará disponible en `http://localhost:5000`.
+    La aplicación estará disponible en `http://localhost:5000`
+
+### Instalación Local (Desarrollo)
+
+1.  Clona el repositorio:
+
+    ```bash
+    git clone https://github.com/tu-usuario/poo-para-todos.git
+    cd poo-para-todos
+    ```
+2.  Crea un entorno virtual:
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # En Windows: venv\Scripts\activate
+    ```
+
+3.  Instala las dependencias:
+
+    ```bash
+    cd flask-app
+    pip install -r requirements.txt
+    ```
+
+4.  Ejecuta la aplicación:
+
+    ```bash
+    python app.py
+    ```
+
+5.  La aplicación estará disponible en `http://localhost:5000`
+
+## Base de Datos
+
+El proyecto utiliza una base de datos simple almacenada en `database.txt`.
+
+### Acceso a la Base de Datos
+
+Para acceder y manipular la base de datos:
+
+Con el contenedor en ejecución:
+
+```bash
+docker exec -it clases-obj-flask-app-1 bash
+```
+
+Desde la terminal del contenedor, puedes manipular la base de datos:
+
+```bash
+cat database.txt          # Ver contenido
+echo "..." >> database.txt # Añadir contenido
+```
+
+### Estructura de la Base de Datos
+
+La base de datos contiene información sobre:
+
+*   Usuarios
+*   Progreso en las lecciones
+*   Resultados de cuestionarios y exámenes
 
 ## Uso
-### Rutas Disponibles
 
-- `/clase`: Muestra la explicación de qué es una clase en POO.
-- `/objeto`: Muestra la explicación de qué es un objeto en POO.
+### Rutas Principales
 
-### Ejemplo de Uso
+*   `/`: Página principal
+*   `/theory/<lesson_id>`: Lecciones teóricas (ej: `/theory/1` para la primera lección)
+*   `/clase`: Explicación del concepto de clases
+*   `/objeto`: Explicación del concepto de objetos
+*   `/quiz/<quiz_id>`: Cuestionarios interactivos
+*   `/exam/<exam_id>`: Exámenes de evaluación
+*   `/login`: Inicio de sesión
+*   `/register`: Registro de usuario
 
-Para ver la explicación de qué es una clase, navega a `http://localhost:5000/clase`.
+### Características Interactivas
 
-## Estructura de Archivos
+*   Editor de código en vivo: Prueba ejemplos de código Python directamente en el navegador
+*   Ejercicios de arrastrar y soltar: Organiza conceptos de POO
+*   Cuestionarios interactivos: Verifica tu comprensión
 
-### Controladores
+## Desarrollo
 
-- `clase_controller.py`: Controlador para manejar la lógica de la explicación de clases.
-- `objeto_controller.py`: Controlador para manejar la lógica de la explicación de objetos.
-- `theory_controller.py`: Controlador para manejar la lógica de las lecciones teóricas.
+### Añadir Nuevas Lecciones
 
-### Modelos
+1.  Crea un archivo HTML en `theory`
+2.  Actualiza el controlador en `theory_controller.py`
+3.  Añade la ruta en `app.py` si es necesario
 
-- `clase_model.py`: Modelo para manejar los datos relacionados con las clases.
-- `objeto_model.py`: Modelo para manejar los datos relacionados con los objetos.
-- `theory_model.py`: Modelo para manejar los datos relacionados con las lecciones teóricas.
+## Herramientas y Tecnologías
 
-### Servicios
-
-- `interactivity_service.py`: Servicio para manejar la validación de ejercicios interactivos.
-
-### Plantillas
-
-- `clase.html`: Plantilla para la explicación de clases.
-- `theory/`: Directorio que contiene las plantillas para las lecciones teóricas.
+*   Backend: Flask (Python)
+*   Frontend: HTML, Tailwind CSS, Alpine.js, HTMX
+*   Editor de Código: CodeMirror
+*   Contenerización: Docker
+*   Estilos: Tailwind CSS
 
 ## Contribuciones
 
-Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request para discutir cualquier cambio que desees realizar.
+Las contribuciones son bienvenidas. Para contribuir:
+
+1.  Haz un fork del repositorio
+2.  Crea una rama para tu función (`git checkout -b feature/nueva-funcion`)
+3.  Haz commit de tus cambios (`git commit -m 'Añade nueva función'`)
+4.  Haz push a la rama (`git push origin feature/nueva-funcion`)
+5.  Abre un Pull Request
+
+## Guía de Estilo
+
+*   Python: Sigue PEP 8
+*   HTML/CSS: Utiliza Tailwind CSS con clases semánticas
+*   JavaScript: Prefiere funciones modernas y mantén el código limpio
 
 ## Licencia
 
 Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+
+## Contacto
+
+Para preguntas o soporte, por favor abre un issue en el repositorio o contacta al mantenedor del proyecto.
+
+Desarrollado con ❤️ para hacer la Programación Orientada a Objetos accesible para todos.
+
+Fortino Romero Mantilla
+```
