@@ -103,6 +103,44 @@
             align-items: center;
             justify-content: center;
         }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .shake-animation {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        
+        .feedback {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .feedback.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Pulse animation for important elements */
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="theme-bg min-h-screen">
@@ -166,7 +204,7 @@
                 
                 <div class="uml-diagram mt-4 relative">
                     <div class="progress-badge">+1</div>
-                    
+                     
                     <div class="p-4 border-b border-gray-200">
                         <h3 class="text-lg font-bold mb-2 text-center">Objeto de {{ clase[1] }}</h3>
                     </div>
@@ -184,7 +222,9 @@
                             <!-- Los métodos del objeto se colocarán aquí -->
                         </div>
                     </div>
+
                 </div>
+                
             </div>
             
             <!-- Panel derecho: Elementos para arrastrar -->
@@ -281,34 +321,67 @@
             this.classList.remove('highlight');
         }
         
-        function handleDrop(e) {
-            e.preventDefault();
-            this.classList.remove('highlight');
-            
-            // Verificar si el tipo de elemento coincide con el área de destino
-            const itemTipo = dragItem.dataset.tipo;
-            const areaTipo = this.dataset.type;
-            
-            if (itemTipo === areaTipo) {
-                // Si es el tipo correcto, agrega el elemento al área
-                const newItem = document.createElement('div');
-                newItem.innerHTML = dragItem.outerHTML;
-                newItem.firstChild.classList.remove('opacity-50');
-                newItem.firstChild.addEventListener('dragstart', handleDragStart);
-                this.appendChild(newItem.firstChild);
-                
-                // Eliminar el elemento original solo si viene del área de elementos
-                if (dragItem.parentNode === elementosDrag) {
-                    dragItem.remove();
-                }
-            } else {
-                // Si no es el tipo correcto, restaurar el elemento
-                dragItem.classList.remove('opacity-50');
-            }
-            
-            return false;
+        // Replace the handleDrop function:
+
+function handleDrop(e) {
+    e.preventDefault();
+    this.classList.remove('highlight');
+    
+    // Verificar si el tipo de elemento coincide con el área de destino
+    const itemTipo = dragItem.dataset.tipo;
+    const areaTipo = this.dataset.type;
+    
+    if (itemTipo === areaTipo) {
+        // Si es el tipo correcto, agrega el elemento al área
+        const newItem = document.createElement('div');
+        newItem.innerHTML = dragItem.outerHTML;
+        newItem.firstChild.classList.remove('opacity-50');
+        newItem.firstChild.addEventListener('dragstart', handleDragStart);
+        this.appendChild(newItem.firstChild);
+        
+        // Eliminar el elemento original solo si viene del área de elementos
+        if (dragItem.parentNode === elementosDrag) {
+            dragItem.remove();
+        }
+    } else {
+        // Si no es el tipo correcto, mostrar retroalimentación visual
+        dragItem.classList.remove('opacity-50');
+        
+        // Crear y mostrar un mensaje de error
+        const tooltip = document.createElement('div');
+        tooltip.className = 'fixed bg-red-500 text-white text-sm px-3 py-2 rounded-lg shadow-lg z-50 animate-pulse';
+        tooltip.style.pointerEvents = 'none';
+        tooltip.style.fontSize = '14px';
+        tooltip.style.fontWeight = 'bold';
+        
+        if (itemTipo === 'metodo') {
+            tooltip.textContent = 'Los métodos no pueden colocarse en el área de atributos';
+        } else {
+            tooltip.textContent = 'Los atributos no pueden colocarse en el área de métodos';
         }
         
+        // Posicionar el tooltip cerca del área donde intentaron soltar
+        const rect = this.getBoundingClientRect();
+        tooltip.style.top = `${rect.top - 40}px`;
+        tooltip.style.left = `${rect.left + rect.width/2 - 125}px`;
+        
+        document.body.appendChild(tooltip);
+        
+        // Hacer que el tooltip desaparezca después de 2 segundos
+        setTimeout(() => {
+            tooltip.style.opacity = '0';
+            setTimeout(() => tooltip.remove(), 300);
+        }, 2000);
+        
+        // Agregar una animación ligera al área para indicar rechazo
+        this.style.backgroundColor = '#fee2e2';
+        setTimeout(() => {
+            this.style.backgroundColor = '';
+        }, 500);
+    }
+    
+    return false;
+}
         // Verificar respuesta
         document.getElementById('verificarBtn').addEventListener('click', () => {
             // Recopilar los métodos y atributos colocados
@@ -324,7 +397,7 @@
             // Contar vidas actuales
             const corazonesActivos = document.querySelectorAll('.heart-active').length;
             
-            fetch('/verificar-respuesta', {
+            fetch('/verificar-examen', {  // Changed from '/verificar-respuesta'
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -335,50 +408,53 @@
                 })
             })
             .then(response => response.json())
-            .then(data => {
-                const feedbackElement = document.getElementById('feedback');
-                
-                if (data.es_correcto) {
-                    // Mostrar feedback positivo
-                    feedbackElement.textContent = '¡Correcto!';
-                    feedbackElement.className = 'feedback mt-6 p-4 rounded-lg text-center font-medium bg-green-100 text-green-800';
-                    
-                    // Si hay una siguiente ronda, prepararla
-                    if (!data.juego_terminado && data.siguiente_clase) {
-                        setTimeout(() => {
-                            clearInterval(timer); // Detener el timer actual
-                            
-                            // Si quieres cambiar toda la página a la siguiente clase:
-                            window.location.href = '/exam?ronda=' + data.ronda_actual;
-                            
-                            // Alternativa: Actualizar dinámicamente la página actual con la nueva clase
-                            // Esto requeriría más código para actualizar los elementos del DOM
-                        }, 1500);
-                    } else if (data.juego_terminado) {
-                        // Si el juego ha terminado con éxito
-                        setTimeout(() => {
-                            window.location.href = '/resultados-quiz?score=' + data.puntuacion;
-                        }, 1500);
-                    }
-                } else {
-                    // Mostrar feedback negativo
-                    feedbackElement.textContent = 'Incorrecto. Inténtalo de nuevo.';
-                    feedbackElement.className = 'feedback mt-6 p-4 rounded-lg text-center font-medium bg-red-100 text-red-800';
-                    
-                    // Actualizar vidas
-                    actualizarVidas(data.vidas);
-                    
-                    // Si se perdieron todas las vidas, terminar el juego
-                    if (data.vidas <= 0) {
-                        setTimeout(() => {
-                            window.location.href = '/resultados-quiz?score=' + data.puntuacion;
-                        }, 1500);
-                    }
-                }
-                
-                feedbackElement.classList.remove('hidden');
-                setTimeout(() => feedbackElement.classList.add('show'), 10);
-            })
+            // Update the verification response handling
+.then(data => {
+    const feedbackElement = document.getElementById('feedback');
+    
+    if (data.es_correcto) {
+        // Positive feedback
+        feedbackElement.textContent = data.feedback_message || '¡Correcto!';
+        feedbackElement.className = 'feedback mt-6 p-4 rounded-lg text-center font-medium bg-green-100 text-green-800 show';
+        
+        // Confetti effect for correct answers
+        createConfetti();
+        
+        // If there's a next round, prepare it
+        if (!data.juego_terminado && data.siguiente_clase) {
+            setTimeout(() => {
+                clearInterval(timer); // Stop current timer
+                window.location.href = '/exam?ronda=' + data.ronda_actual;
+            }, 2000);
+        } else if (data.juego_terminado) {
+            // Game over with success
+            setTimeout(() => {
+                // Add exam=true parameter to make sure we use the exam controller
+                window.location.href = '/resultados-quiz?score=' + data.puntuacion + '&vidas=' + data.vidas + '&exam=true';
+            }, 1500);
+        }
+    } else {
+        // Negative feedback
+        feedbackElement.textContent = data.feedback_message || 'Incorrecto. Inténtalo de nuevo.';
+        feedbackElement.className = 'feedback mt-6 p-4 rounded-lg text-center font-medium bg-red-100 text-red-800 show';
+        
+        // Show an error animation
+        shakeElement(document.querySelector('.uml-diagram'));
+        
+        // Update lives
+        actualizarVidas(data.vidas);
+        
+        // If all lives lost, end game
+        if (data.vidas <= 0) {
+            setTimeout(() => {
+                // Add exam=true parameter here too
+                window.location.href = '/resultados-quiz?score=' + data.puntuacion + '&vidas=' + data.vidas + '&exam=true';
+            }, 1500);
+        }
+    }
+    
+    feedbackElement.classList.remove('hidden');
+})
             .catch(error => {
                 console.error('Error:', error);
                 alert('Ocurrió un error al procesar tu respuesta');
@@ -397,6 +473,40 @@
                     corazon.classList.add('heart-inactive');
                 }
             });
+        }
+
+        // Function to shake an element for error feedback
+        function shakeElement(element) {
+            element.classList.add('shake-animation');
+            setTimeout(() => {
+                element.classList.remove('shake-animation');
+            }, 500);
+        }
+
+        // Simple confetti effect for correct answers
+        function createConfetti() {
+            const confettiContainer = document.createElement('div');
+            confettiContainer.className = 'fixed inset-0 pointer-events-none z-50';
+            document.body.appendChild(confettiContainer);
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b'][Math.floor(Math.random() * 4)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.top = '0';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.transform = 'translateY(-20px)';
+                confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+                
+                confettiContainer.appendChild(confetti);
+            }
+            
+            setTimeout(() => {
+                confettiContainer.remove();
+            }, 5000);
         }
     </script>
 </body>

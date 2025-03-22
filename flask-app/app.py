@@ -58,14 +58,24 @@ app.add_url_rule('/seleccion',
 def iniciar_quiz(tema):
     return quiz_controller.iniciar_quiz(tema)
 
-# Add this route
 @app.route('/verificar-respuesta', methods=['POST'])
 def verificar_respuesta():
     return quiz_controller.verificar_respuesta()
 
+@app.route('/verificar-examen', methods=['POST'])
+def verificar_examen():
+    return exam_controller.verificar_respuesta()
+
 @app.route('/resultados-quiz')
 def mostrar_resultados():
-    return quiz_controller.mostrar_resultados()
+    # Check if we're coming from exam or quiz
+    from_exam = request.args.get('exam') == 'true'
+    
+    if from_exam:
+        return exam_controller.mostrar_resultados()
+    else:
+        # Make sure quiz_controller handles undefined variables
+        return quiz_controller.mostrar_resultados()
 
 @app.route('/clase')
 def mostrar_clase():

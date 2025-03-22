@@ -2,61 +2,67 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Resultados del Quiz</title>
+    <title>Resultados del Ejercicio UML</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-12">
         <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto text-center">
-            <h1 class="text-3xl font-bold mb-6">¡Quiz Completado!</h1>
+            <h1 class="text-3xl font-bold mb-6">¡Ejercicio UML Completado!</h1>
             
             <div class="bg-blue-50 p-6 rounded-lg mb-8">
-                <h2 class="text-2xl font-semibold text-blue-800 mb-2">Tema: {{ tema }}</h2>
+                <h2 class="text-2xl font-semibold text-blue-800 mb-2">Diagramas UML</h2>
                 <p class="text-xl mb-2">
-                    Has acertado <span class="font-bold text-green-600">{{ correctas }}</span> de 
-                    <span class="font-bold">{{ total }}</span> preguntas
+                    Has completado <span class="font-bold text-green-600">{{ puntuacion }}</span> de 
+                    <span class="font-bold">{{ total_rondas|default(10) }}</span> diagramas correctamente
                 </p>
                 
                 <div class="w-full bg-gray-200 rounded-full h-4 mt-4 mb-2">
-                    <div class="bg-blue-600 h-4 rounded-full" style="width: {{ (correctas / total) * 100 }}%"></div>
+                    <div class="bg-blue-600 h-4 rounded-full" style="width: {{ (puntuacion / total_rondas|default(10)) * 100 }}%"></div>
                 </div>
                 
-                <p class="text-sm text-gray-600">{{ (correctas / total) * 100 }}% de aciertos</p>
+                <p class="text-sm text-gray-600">{{ (puntuacion / total_rondas|default(10)) * 100 }}% de aciertos</p>
                 
-                {% if vidas_restantes > 0 %}
+                {% if vidas > 0 %}
                 <div class="mt-4">
                     <p class="text-green-600">
-                        ¡Has conservado {{ vidas_restantes }} {% if vidas_restantes == 1 %}vida{% else %}vidas{% endif %}!
+                        ¡Has conservado {{ vidas }} {% if vidas == 1 %}vida{% else %}vidas{% endif %}!
                     </p>
                     <div class="flex justify-center mt-2">
-                        {% for i in range(vidas_restantes) %}
+                        {% for i in range(vidas) %}
                             <span class="text-2xl text-red-500 mx-1">❤</span>
                         {% endfor %}
                     </div>
+                </div>
+                {% else %}
+                <div class="mt-4">
+                    <p class="text-red-600">
+                        ¡Has perdido todas tus vidas!
+                    </p>
                 </div>
                 {% endif %}
             </div>
             
             <!-- Mensaje de evaluación según el puntaje -->
             <div class="mb-8">
-                {% if correctas >= 8 %}
-                    <p class="text-xl font-semibold text-green-600">¡Excelente trabajo! Dominas el tema.</p>
-                {% elif correctas >= 6 %}
-                    <p class="text-xl font-semibold text-blue-600">¡Buen trabajo! Has aprendido los aspectos fundamentales.</p>
-                {% elif correctas >= 4 %}
-                    <p class="text-xl font-semibold text-yellow-600">Vas por buen camino. Repasa para mejorar tu puntuación.</p>
+                {% if puntuacion >= 8 %}
+                    <p class="text-xl font-semibold text-green-600">¡Excelente trabajo! Dominas los diagramas UML de clases y objetos.</p>
+                {% elif puntuacion >= 6 %}
+                    <p class="text-xl font-semibold text-blue-600">¡Buen trabajo! Has aprendido los aspectos fundamentales de UML.</p>
+                {% elif puntuacion >= 4 %}
+                    <p class="text-xl font-semibold text-yellow-600">Vas por buen camino. Sigue practicando para mejorar tu puntuación.</p>
                 {% else %}
-                    <p class="text-xl font-semibold text-red-600">Necesitas reforzar tus conocimientos en este tema.</p>
+                    <p class="text-xl font-semibold text-red-600">Necesitas reforzar tus conocimientos sobre clases y objetos en UML.</p>
                 {% endif %}
             </div>
             
             <!-- Botones de acción -->
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/quiz/{{ tema }}?restart=true" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                <a href="/exam" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                     Intentar de nuevo
                 </a>
-                <a href="/teoria/{{ tema }}" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                    Repasar teoría
+                <a href="/seleccion" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                    Explorar más ejemplos
                 </a>
                 <a href="/" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                     Volver al inicio
